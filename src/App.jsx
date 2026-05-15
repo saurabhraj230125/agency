@@ -8,6 +8,62 @@ const BookingContext = React.createContext({
   openBooking: () => {}
 });
 
+const seoFaqs = [
+  {
+    question: "How long does SEO take to show results?",
+    answer: "Most sites see early movement in 4 to 8 weeks, with meaningful compounding gains by months 3 to 6. We pair SEO with conversion fixes so early traffic converts faster."
+  },
+  {
+    question: "Do you handle local SEO for Indian businesses?",
+    answer: "Yes. We optimize Google Business Profiles, location pages, and local intent keywords that capture high-intent searches in Tier-2 and Tier-3 cities."
+  },
+  {
+    question: "Will you improve site speed and Core Web Vitals?",
+    answer: "Absolutely. We optimize performance, image delivery, and code splitting to reach 90+ speed scores and improve Core Web Vitals."
+  },
+  {
+    question: "Do you provide content and landing pages?",
+    answer: "Yes. We create SEO-focused service pages, location pages, and high-converting landing pages aligned with your offers."
+  }
+];
+
+const upsertMeta = ({ name, property, content }) => {
+  const attrName = name ? "name" : "property";
+  const attrValue = name || property;
+  if (!attrValue) {
+    return;
+  }
+  let element = document.querySelector(`meta[${attrName}="${attrValue}"]`);
+  if (!element) {
+    element = document.createElement("meta");
+    element.setAttribute(attrName, attrValue);
+    document.head.appendChild(element);
+  }
+  element.setAttribute("content", content);
+};
+
+const upsertLink = ({ rel, href }) => {
+  let element = document.querySelector(`link[rel="${rel}"]`);
+  if (!element) {
+    element = document.createElement("link");
+    element.setAttribute("rel", rel);
+    document.head.appendChild(element);
+  }
+  element.setAttribute("href", href);
+};
+
+const upsertJsonLd = (json) => {
+  const scriptId = "seo-jsonld";
+  let script = document.getElementById(scriptId);
+  if (!script) {
+    script = document.createElement("script");
+    script.setAttribute("id", scriptId);
+    script.setAttribute("type", "application/ld+json");
+    document.head.appendChild(script);
+  }
+  script.textContent = JSON.stringify(json);
+};
+
 // --- Components ---
 
 const BookingModal = ({ isOpen, onClose }) => {
@@ -84,7 +140,8 @@ const Navbar = () => {
             </span>
           </Link>
           <div className="hidden md:flex items-center space-x-8">
-            <a href="/#services" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">Services</a>
+            <Link to="/services" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">Services</Link>
+            <Link to="/seo" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">SEO</Link>
             <a href="/#our-work" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">Our Work</a>
             <a href="/#about-us" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">About</a>
             <a href="/#pricing" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">Pricing</a>
@@ -117,7 +174,8 @@ const Navbar = () => {
               className="md:hidden pb-6"
             >
               <div className="mt-4 flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-900/60 backdrop-blur-md p-6">
-                <a href="/#services" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">Services</a>
+                <Link to="/services" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">Services</Link>
+                <Link to="/seo" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">SEO</Link>
                 <a href="/#our-work" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">Our Work</a>
                 <a href="/#about-us" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">About</a>
                 <a href="/#pricing" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">Pricing</a>
@@ -216,14 +274,15 @@ const Footer = () => {
           <h4 className="text-sm font-semibold tracking-widest text-slate-400">SERVICES</h4>
           <div className="flex flex-col gap-3">
             {[
-              "Web Development",
-              "AI Automation",
-              "Custom CRM",
-              "Lead Generation"
-            ].map((label) => (
+              { label: "Web Development", href: "/services#web-development" },
+              { label: "AI Automation", href: "/services#ai-automation" },
+              { label: "Custom CRM", href: "/services#custom-crm" },
+              { label: "Lead Generation", href: "/services#lead-generation" },
+              { label: "SEO Strategy", href: "/seo" }
+            ].map(({ label, href }) => (
               <a
                 key={label}
-                href="#services"
+                href={href}
                 className="text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(59,130,246,0.4)]"
               >
                 {label}
@@ -927,6 +986,229 @@ const Home = () => {
   );
 };
 
+const ServicesPage = () => {
+  const serviceHighlights = [
+    {
+      id: "web-development",
+      title: "High-Conversion Websites",
+      description: "Premium websites engineered for speed, trust, and conversion. Perfect for Indian businesses competing in local search.",
+      bullets: ["90+ speed score", "Conversion-first layouts", "Mobile-first UX"]
+    },
+    {
+      id: "ai-automation",
+      title: "AI Automation",
+      description: "Automate follow-ups, lead scoring, and customer engagement with AI-driven workflows that reduce manual work.",
+      bullets: ["Auto replies", "Lead qualification", "Smart routing"]
+    },
+    {
+      id: "custom-crm",
+      title: "Custom CRM",
+      description: "Centralize leads, payments, and team activity in a CRM tailored to your process and local market needs.",
+      bullets: ["Role-based dashboards", "Deal stages", "Pipeline clarity"]
+    },
+    {
+      id: "lead-generation",
+      title: "Lead Generation Funnels",
+      description: "High-performing landing pages, WhatsApp funnels, and campaign-ready pages designed to convert intent fast.",
+      bullets: ["WhatsApp CTAs", "Instant lead capture", "Retargeting ready"]
+    },
+    {
+      id: "payments",
+      title: "Payments + Integrations",
+      description: "Razorpay, UPI, Stripe, and CRM integrations for smooth billing, automation, and reconciliation.",
+      bullets: ["Auto invoicing", "Webhook automation", "Subscription logic"]
+    },
+    {
+      id: "seo-systems",
+      title: "SEO + Local Growth",
+      description: "Search-optimized architecture, content, and technical SEO that compound visibility for local markets.",
+      bullets: ["Local intent keywords", "Location pages", "Schema markup"]
+    }
+  ];
+
+  const deliveryPhases = [
+    {
+      title: "Strategy + Research",
+      details: "Audit, keyword mapping, and competitive positioning based on local intent and revenue goals."
+    },
+    {
+      title: "Design + Build",
+      details: "High-fidelity UI, conversion copy, and performance-first implementation."
+    },
+    {
+      title: "Automation + Launch",
+      details: "Integrations, analytics, and post-launch optimization for compounding results."
+    }
+  ];
+
+  return (
+    <div className="bg-slate-950 text-white min-h-screen pt-24">
+      <section className="relative px-4 sm:px-6 lg:px-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.18),_transparent_60%)] pointer-events-none" />
+        <div className="max-w-6xl mx-auto text-center relative z-10">
+          <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-blue-300 uppercase px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10">
+            Services
+          </span>
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight mt-6">
+            High-end websites, automation, and SEO systems
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400"> built for Indian growth brands.</span>
+          </h1>
+          <p className="text-slate-400 text-lg max-w-3xl mx-auto mt-6 leading-relaxed">
+            We design the full revenue stack: websites, funnels, automation, and local SEO. Every service is engineered to convert traffic into leads and repeat revenue.
+          </p>
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/get-started" className="px-8 py-4 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-all duration-300 ease-in-out hover:scale-105 shadow-[0_0_35px_rgba(37,99,235,0.4)]">
+              Start a Custom Audit
+            </Link>
+            <Link to="/seo" className="px-8 py-4 rounded-full border border-slate-700 text-slate-200 hover:text-white hover:border-slate-500 transition-all duration-300 ease-in-out hover:scale-105">
+              Explore SEO Systems
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {serviceHighlights.map((service) => (
+              <div key={service.title} id={service.id} className="rounded-3xl border border-slate-800 bg-slate-900/60 backdrop-blur-md p-8">
+                <h2 className="text-2xl font-semibold tracking-tight text-white mb-3">{service.title}</h2>
+                <p className="text-slate-400 leading-relaxed mb-6">{service.description}</p>
+                <div className="space-y-3">
+                  {service.bullets.map((bullet) => (
+                    <div key={bullet} className="flex items-start gap-3 text-sm text-slate-300">
+                      <CheckCircle2 className="w-4 h-4 mt-0.5 text-blue-400" />
+                      <span className="leading-relaxed">{bullet}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 bg-slate-900/40">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">How we deliver</h2>
+            <p className="text-slate-400 mt-4 max-w-2xl mx-auto">
+              A clear execution model that moves fast, keeps quality high, and optimizes for revenue outcomes.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {deliveryPhases.map((phase) => (
+              <div key={phase.title} className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6">
+                <h3 className="text-xl font-semibold text-white mb-3">{phase.title}</h3>
+                <p className="text-slate-400 leading-relaxed">{phase.details}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Ready for a high-end build?</h2>
+          <p className="text-slate-400 mt-4 max-w-2xl mx-auto">
+            Tell us about your business and we will deliver a conversion-first plan with SEO and automation included.
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/get-started" className="px-8 py-4 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-all duration-300 ease-in-out hover:scale-105">
+              Get a Custom Plan
+            </Link>
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="px-8 py-4 rounded-full border border-slate-700 text-slate-200 hover:text-white hover:border-slate-500 transition-all duration-300 ease-in-out"
+            >
+              Back to Top
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+const SeoLanding = () => {
+  const seoPillars = [
+    {
+      title: "Local Intent Targeting",
+      description: "We map high-intent, location-based keywords to services so your business appears when buyers are ready."
+    },
+    {
+      title: "Technical SEO",
+      description: "Structured data, Core Web Vitals, and indexation hygiene that make Google trust your site faster."
+    },
+    {
+      title: "Conversion UX",
+      description: "We turn traffic into leads using clarity, strong CTAs, WhatsApp funnels, and form optimizations."
+    },
+    {
+      title: "Compounding Content",
+      description: "SEO landing pages, service pages, and case studies designed to rank and convert."
+    }
+  ];
+
+  return (
+    <div className="bg-slate-950 text-white min-h-screen pt-24">
+      <section className="relative px-4 sm:px-6 lg:px-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.2),_transparent_60%)] pointer-events-none" />
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-indigo-300 uppercase px-4 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10">
+            SEO Systems
+          </span>
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight mt-6">
+            High-end SEO for premium websites that
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-400"> drives leads in India.</span>
+          </h1>
+          <p className="text-slate-400 text-lg max-w-3xl mx-auto mt-6 leading-relaxed">
+            FutureQ blends technical SEO, conversion UX, and local intent targeting to help your agency or business rank, convert, and scale.
+          </p>
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/get-started" className="px-8 py-4 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-all duration-300 ease-in-out hover:scale-105 shadow-[0_0_35px_rgba(99,102,241,0.4)]">
+              Get an SEO Audit
+            </Link>
+            <Link to="/services" className="px-8 py-4 rounded-full border border-slate-700 text-slate-200 hover:text-white hover:border-slate-500 transition-all duration-300 ease-in-out hover:scale-105">
+              View Full Services
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {seoPillars.map((pillar) => (
+              <div key={pillar.title} className="rounded-3xl border border-slate-800 bg-slate-900/60 backdrop-blur-md p-8">
+                <h2 className="text-2xl font-semibold text-white mb-3">{pillar.title}</h2>
+                <p className="text-slate-400 leading-relaxed">{pillar.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 bg-slate-900/40">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">FAQ</h2>
+            <p className="text-slate-400 mt-4">Answers to common questions about SEO, local rankings, and performance.</p>
+          </div>
+          <div className="space-y-6">
+            {seoFaqs.map((faq) => (
+              <div key={faq.question} className="rounded-3xl border border-slate-800 bg-slate-950/70 p-6">
+                <h3 className="text-lg font-semibold text-white">{faq.question}</h3>
+                <p className="text-slate-400 leading-relaxed mt-2">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
 const GetStartedFlow = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -1162,6 +1444,131 @@ const ThankYou = () => {
 
 // --- App Root ---
 
+const SeoManager = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    const origin = window.location.origin;
+    const url = `${origin}${pathname}`;
+
+    const seoConfig = {
+      "/": {
+        title: "FutureQ | Conversion-First Websites & Automation",
+        description: "FutureQ builds high-conversion websites, automation systems, and AI workflows for fast-growing Indian businesses.",
+        keywords: "agency website, web development, automation, AI workflows, local SEO, India",
+        robots: "index, follow",
+        ogType: "website",
+        serviceType: "Web development, automation, and SEO"
+      },
+      "/services": {
+        title: "Services | FutureQ Web, SEO, Automation",
+        description: "Explore high-end websites, automation, CRM, and SEO services designed to grow local Indian businesses.",
+        keywords: "website services, SEO agency, CRM, automation, lead generation",
+        robots: "index, follow",
+        ogType: "website",
+        serviceType: "Website design, automation, CRM, and SEO"
+      },
+      "/seo": {
+        title: "SEO Systems | FutureQ Local SEO & Growth",
+        description: "High-end SEO for Indian businesses: technical SEO, local intent targeting, and conversion-first landing pages.",
+        keywords: "SEO services, local SEO India, technical SEO, conversion optimization",
+        robots: "index, follow",
+        ogType: "website",
+        serviceType: "SEO and conversion optimization",
+        includeFaq: true
+      },
+      "/get-started": {
+        title: "Get Started | FutureQ Custom Audit",
+        description: "Share your project details to receive a custom audit and build plan.",
+        robots: "noindex, nofollow",
+        ogType: "website"
+      },
+      "/thank-you": {
+        title: "Thank You | FutureQ",
+        description: "We received your details and will follow up shortly.",
+        robots: "noindex, nofollow",
+        ogType: "website"
+      }
+    };
+
+    const page = seoConfig[pathname] || seoConfig["/"];
+    const ogImage = `${origin}/icons.svg`;
+
+    document.title = page.title;
+    upsertMeta({ name: "description", content: page.description });
+    upsertMeta({ name: "robots", content: page.robots });
+    if (page.keywords) {
+      upsertMeta({ name: "keywords", content: page.keywords });
+    }
+    upsertMeta({ property: "og:title", content: page.title });
+    upsertMeta({ property: "og:description", content: page.description });
+    upsertMeta({ property: "og:type", content: page.ogType });
+    upsertMeta({ property: "og:url", content: url });
+    upsertMeta({ property: "og:image", content: ogImage });
+    upsertMeta({ name: "twitter:title", content: page.title });
+    upsertMeta({ name: "twitter:description", content: page.description });
+    upsertMeta({ name: "twitter:image", content: ogImage });
+    upsertMeta({ name: "twitter:card", content: "summary_large_image" });
+    upsertLink({ rel: "canonical", href: url });
+
+    const orgId = `${origin}/#organization`;
+    const siteId = `${origin}/#website`;
+    const pageId = `${url}#webpage`;
+
+    const graph = [
+      {
+        "@type": "Organization",
+        "@id": orgId,
+        name: "FutureQ",
+        url: origin,
+        logo: ogImage,
+        email: "saurabh.futureq@gmail.com"
+      },
+      {
+        "@type": "WebSite",
+        "@id": siteId,
+        name: "FutureQ",
+        url: origin,
+        publisher: { "@id": orgId }
+      },
+      {
+        "@type": "WebPage",
+        "@id": pageId,
+        name: page.title,
+        url,
+        description: page.description,
+        isPartOf: { "@id": siteId }
+      }
+    ];
+
+    if (page.serviceType) {
+      graph.push({
+        "@type": "Service",
+        serviceType: page.serviceType,
+        provider: { "@id": orgId }
+      });
+    }
+
+    if (page.includeFaq) {
+      graph.push({
+        "@type": "FAQPage",
+        mainEntity: seoFaqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer
+          }
+        }))
+      });
+    }
+
+    upsertJsonLd({ "@context": "https://schema.org", "@graph": graph });
+  }, [pathname]);
+
+  return null;
+};
+
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -1177,6 +1584,7 @@ const Layout = ({ children }) => {
   return (
     <>
       <ScrollToTop />
+      <SeoManager />
       {!isFormOrThanks && <Navbar />}
       <main className="min-h-screen">{children}</main>
       {!isFormOrThanks && <Footer />}
@@ -1206,6 +1614,8 @@ export default function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/seo" element={<SeoLanding />} />
             <Route path="/get-started" element={<GetStartedFlow />} />
             <Route path="/thank-you" element={<ThankYou />} />
           </Routes>
