@@ -895,9 +895,9 @@ const Home = () => {
                 ],
                 buttonText: "Automate Everything",
                 buttonClass:
-                  "bg-gradient-to-r from-amber-400 to-emerald-400 text-slate-950 hover:from-amber-300 hover:to-emerald-300 shadow-xl shadow-amber-500/30",
-                cardClass: "bg-[#0b1118] border border-white/15",
-                accent: "text-amber-100",
+                  "bg-gradient-to-r from-amber-300 to-emerald-300 text-slate-950 hover:from-amber-200 hover:to-emerald-200 shadow-xl shadow-amber-400/40",
+                cardClass: "bg-[#0b1118] border border-amber-200/30 shadow-[0_0_40px_rgba(16,185,129,0.12)]",
+                accent: "text-amber-50",
                 isPopular: false,
                 hasGradientBorder: true
               }
@@ -928,13 +928,16 @@ const Home = () => {
                 viewport={{ once: true, margin: "-80px" }}
                 className="grid grid-cols-1 gap-8 md:grid-cols-3"
               >
-                {tiers.map((tier) => (
+                {tiers.map((tier) => {
+                  const isEnterprise = tier.name === "ENTERPRISE";
+                  return (
                   <motion.div
                     key={tier.name}
                     variants={cardVariants}
-                    whileHover={{ y: -8 }}
-                    className={`relative h-full rounded-3xl p-8 backdrop-blur ${tier.cardClass}`}
+                    whileHover={isEnterprise ? { y: -12, scale: 1.01 } : { y: -8 }}
+                    className={`relative h-full rounded-3xl p-8 backdrop-blur ${tier.cardClass} ${isEnterprise ? "enterprise-card" : ""}`}
                   >
+                    {isEnterprise && <div className="enterprise-border" />}
                     {tier.hasGradientBorder && (
                       <>
                         <div className="absolute -inset-[2px] rounded-3xl bg-gradient-to-r from-amber-400 via-emerald-400 to-amber-400 opacity-70 blur-sm" />
@@ -949,17 +952,17 @@ const Home = () => {
                     )}
 
                     <div className="relative z-10 flex h-full flex-col">
-                      <p className="text-xs font-semibold tracking-widest text-slate-400">{tier.name}</p>
-                      <p className={`mt-1 text-sm ${tier.accent}`}>{tier.tagline}</p>
+                      <p className={`text-xs font-semibold tracking-widest text-slate-400 ${isEnterprise ? "enterprise-label" : ""}`}>{tier.name}</p>
+                      <p className={`mt-1 text-sm ${tier.accent} ${isEnterprise ? "enterprise-tagline" : ""}`}>{tier.tagline}</p>
 
                       <div className="mt-5 flex items-baseline gap-1">
                         <span className="text-2xl font-medium text-slate-400">₹</span>
-                        <span className="text-5xl font-semibold tracking-tight text-white">{tier.price}</span>
+                        <span className={`text-5xl font-semibold tracking-tight text-white ${isEnterprise ? "enterprise-price" : ""}`}>{tier.price}</span>
                       </div>
 
-                      <p className="mt-3 text-sm leading-relaxed text-slate-300">{tier.subtitle}</p>
+                      <p className={`mt-3 text-sm leading-relaxed text-slate-300 ${isEnterprise ? "enterprise-subtitle" : ""}`}>{tier.subtitle}</p>
 
-                      <ul className="mt-6 space-y-3">
+                      <ul className={`mt-6 space-y-3 ${isEnterprise ? "enterprise-features" : ""}`}>
                         {tier.features.map((feature) => (
                           <li key={feature} className="flex items-start gap-3 text-sm text-slate-200">
                             <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-300" />
@@ -976,7 +979,8 @@ const Home = () => {
                       </Link>
                     </div>
                   </motion.div>
-                ))}
+                  );
+                })}
               </motion.div>
             );
           })()}

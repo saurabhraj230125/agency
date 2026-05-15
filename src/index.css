@@ -1,5 +1,5 @@
-﻿@import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+﻿@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
 
 @theme {
   --color-primary: #10b981;
@@ -23,4 +23,91 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+.enterprise-card {
+  position: relative;
+  overflow: hidden;
+  padding: 2.5rem;
+}
+
+.enterprise-border {
+  position: absolute;
+  inset: -1px;
+  border-radius: 1.7rem;
+  background: linear-gradient(120deg, rgba(16, 185, 129, 0.2), rgba(251, 191, 36, 0.35), rgba(16, 185, 129, 0.2));
+  background-size: 200% 200%;
+  opacity: 0.6;
+  animation: enterpriseBorder 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.enterprise-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(600px circle at 15% 0%, rgba(251, 191, 36, 0.15), transparent 60%);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.enterprise-card::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -60%;
+  width: 60%;
+  height: 200%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  opacity: 0;
+  transform: translateX(0) rotate(12deg);
+  transition: opacity 0.4s ease, transform 0.7s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.enterprise-card:hover::after {
+  opacity: 0.35;
+  transform: translateX(160%) rotate(12deg);
+}
+
+.enterprise-price {
+  text-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+}
+
+.enterprise-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+}
+
+.enterprise-tagline,
+.enterprise-subtitle,
+.enterprise-features {
+  color: rgba(226, 232, 240, 0.95);
+}
+
+.enterprise-tagline {
+  font-size: 1rem;
+}
+
+.enterprise-subtitle {
+  font-size: 0.98rem;
+}
+
+.enterprise-features {
+  font-size: 0.98rem;
+}
+
+@keyframes enterpriseBorder {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
