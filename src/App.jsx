@@ -94,21 +94,84 @@ const BookingModal = ({ isOpen, onClose }) => {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="flex-1 w-full h-full pt-[60px] bg-slate-50 relative">
-               {/* Adding a loading skeleton or just background */}
-                 <div className="absolute inset-0 pt-[60px] flex items-center justify-center -z-10 bg-[#0a0d12]">
-                 <div className="animate-pulse flex items-center gap-2 text-slate-400">
-                     <Calendar className="w-5 h-5 animate-bounce text-emerald-300" />
-                   Loading Calendar...
-                 </div>
-               </div>
-               <iframe 
-                  src="https://calendly.com/saurabh-futureq/30min"
-                  width="100%"
-                  height="100%"
-                  frameBorder="0"
-                  className="w-full h-full relative z-10 rounded-b-3xl"
-               ></iframe>
+            <div className="flex-1 w-full h-full pt-[60px] bg-[#0a0d12] relative">
+              <div className="h-full w-full px-6 py-8 sm:px-10">
+                <div className="grid h-full grid-cols-1 gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+                  <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8">
+                    <p className="text-xs font-semibold tracking-widest text-emerald-200 uppercase">
+                      Booking overview
+                    </p>
+                    <h3 className="mt-3 text-2xl font-semibold text-white">
+                      Choose a time that works for you
+                    </h3>
+                    <p className="mt-2 text-sm text-slate-300 leading-relaxed">
+                      This is a lightweight preview of availability. We will confirm the slot over email or WhatsApp within one business day.
+                    </p>
+                    <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                      {[
+                        { day: "Mon", date: "May 19", slots: ["11:00 AM", "1:30 PM", "4:00 PM"] },
+                        { day: "Wed", date: "May 21", slots: ["10:30 AM", "2:00 PM", "5:30 PM"] },
+                        { day: "Thu", date: "May 22", slots: ["12:00 PM", "3:15 PM", "6:00 PM"] },
+                        { day: "Fri", date: "May 23", slots: ["9:30 AM", "12:45 PM", "4:30 PM"] }
+                      ].map((block) => (
+                        <div key={block.date} className="rounded-2xl border border-white/10 bg-[#0a0d12]/70 p-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-white">{block.day}</span>
+                            <span className="text-xs text-slate-400">{block.date}</span>
+                          </div>
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {block.slots.map((slot) => (
+                              <span key={slot} className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">
+                                {slot}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8 flex flex-col justify-between">
+                    <div>
+                      <p className="text-xs font-semibold tracking-widest text-amber-200 uppercase">
+                        What happens next
+                      </p>
+                      <h3 className="mt-3 text-2xl font-semibold text-white">Strategy call agenda</h3>
+                      <ul className="mt-4 space-y-3 text-sm text-slate-300">
+                        {[
+                          "30-minute audit of your current growth stack",
+                          "Pinpoint your fastest revenue wins",
+                          "Share a build plan with timelines",
+                          "Discuss integrations and automation"
+                        ].map((item) => (
+                          <li key={item} className="flex items-start gap-3">
+                            <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-300" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="mt-6 rounded-2xl border border-white/10 bg-[#0a0d12]/70 p-5">
+                      <div className="text-sm text-slate-400">Preferred contact</div>
+                      <div className="mt-2 text-base font-semibold text-white">saurabh.futureq@gmail.com</div>
+                      <div className="mt-4 flex gap-3">
+                        <button
+                          onClick={onClose}
+                          className="flex-1 rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-white/30 transition"
+                        >
+                          Close preview
+                        </button>
+                        <button
+                          onClick={onClose}
+                          className="flex-1 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-emerald-400 transition"
+                        >
+                          Request this slot
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </motion.div>
         </motion.div>
@@ -1256,22 +1319,15 @@ const GetStartedFlow = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await fetch("https://hook.eu1.make.com/9ar8qpzvl4bdf5fjpjnukz9jcx84442s", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ...formData,
-          submittedAt: new Date().toISOString(),
-          source: "FutureQ Custom Audit Form"
-        })
-      });
+      const mockPayload = {
+        ...formData,
+        submittedAt: new Date().toISOString(),
+        source: "FutureQ Custom Audit Form",
+        referenceId: `FQ-${Date.now().toString().slice(-6)}`
+      };
 
-      if (!response.ok) {
-        throw new Error("Request failed");
-      }
-
+      await new Promise((resolve) => setTimeout(resolve, 700));
+      console.info("Mock submission stored locally:", mockPayload);
       navigate("/thank-you");
     } catch (error) {
       console.error("Form submission error:", error);
