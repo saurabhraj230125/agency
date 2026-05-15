@@ -1,0 +1,1217 @@
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronRight, LayoutDashboard, CreditCard, Activity, Network, ArrowRight, CheckCircle2, Calendar, X, Link as LinkIcon, Camera, Copy } from "lucide-react";
+import futureqLogo from "./assets/futureq.png";
+
+const BookingContext = React.createContext({
+  openBooking: () => {}
+});
+
+// --- Components ---
+
+const BookingModal = ({ isOpen, onClose }) => {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-sm"
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden relative shadow-[0_0_50px_rgba(37,99,235,0.2)]"
+          >
+            <div className="flex justify-between items-center p-4 border-b border-slate-800 bg-slate-900/80 backdrop-blur-md absolute top-0 left-0 right-0 z-10">
+              <span className="text-white font-medium flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-blue-400" />
+                Schedule a Meeting with FutureQ
+              </span>
+              <button 
+                onClick={onClose}
+                className="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors focus:outline-none"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 w-full h-full pt-[60px] bg-slate-50 relative">
+               {/* Adding a loading skeleton or just background */}
+               <div className="absolute inset-0 pt-[60px] flex items-center justify-center -z-10 bg-slate-950">
+                 <div className="animate-pulse flex items-center gap-2 text-slate-400">
+                   <Calendar className="w-5 h-5 animate-bounce" />
+                   Loading Calendar...
+                 </div>
+               </div>
+               <iframe 
+                  src="https://calendly.com/saurabh-futureq/30min"
+                  width="100%"
+                  height="100%"
+                  frameBorder="0"
+                  className="w-full h-full relative z-10 rounded-b-3xl"
+               ></iframe>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+const Navbar = () => {
+  const { openBooking } = React.useContext(BookingContext);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  return (
+    <motion.nav 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-slate-950/60 border-b border-slate-800"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          <Link to="/" className="flex items-center gap-3">
+            <img
+              src={futureqLogo}
+              alt="FutureQ"
+              className="h-10 w-10 rounded-xl object-contain bg-slate-950/60 border border-slate-800"
+            />
+            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+              FutureQ
+            </span>
+          </Link>
+          <div className="hidden md:flex items-center space-x-8">
+            <a href="/#services" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">Services</a>
+            <a href="/#our-work" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">Our Work</a>
+            <a href="/#about-us" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">About</a>
+            <a href="/#pricing" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">Pricing</a>
+            <button 
+              onClick={openBooking}
+              className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer"
+            >
+              Book a Meeting
+            </button>
+            <Link 
+              to="/get-started" 
+              className="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-medium transition-all duration-300 ease-in-out hover:scale-105 shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)]"
+            >
+              Get Started
+            </Link>
+          </div>
+          <button
+            onClick={() => setIsMenuOpen((value) => !value)}
+            className="md:hidden px-4 py-2 rounded-full border border-slate-700 text-slate-200 text-sm font-medium transition-all duration-300 ease-in-out hover:scale-105 hover:border-slate-500"
+          >
+            {isMenuOpen ? "Close" : "Menu"}
+          </button>
+        </div>
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden pb-6"
+            >
+              <div className="mt-4 flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-900/60 backdrop-blur-md p-6">
+                <a href="/#services" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">Services</a>
+                <a href="/#our-work" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">Our Work</a>
+                <a href="/#about-us" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">About</a>
+                <a href="/#pricing" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">Pricing</a>
+                <button
+                  onClick={() => {
+                    openBooking();
+                    setIsMenuOpen(false);
+                  }}
+                  className="text-left text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out"
+                >
+                  Book a Meeting
+                </button>
+                <Link
+                  to="/get-started"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-center px-5 py-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-medium transition-all duration-300 ease-in-out"
+                >
+                  Get Started
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.nav>
+  );
+};
+
+const Footer = () => {
+  const { openBooking } = React.useContext(BookingContext);
+
+  const handleCopyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText("saurabh.futureq@gmail.com");
+      alert("Email copied to clipboard.");
+    } catch (error) {
+      console.error("Clipboard copy failed:", error);
+      alert("Copy failed. Please try again.");
+    }
+  };
+  
+  return (
+  <footer className="bg-slate-950 relative z-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Layer 1: Pre-Footer CTA */}
+      <div className="-translate-y-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-md p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_0_40px_rgba(37,99,235,0.15)]"
+        >
+          <div className="flex items-center gap-4">
+            <img
+              src={futureqLogo}
+              alt="FutureQ"
+              className="h-12 w-12 rounded-2xl object-contain bg-slate-950/60 border border-slate-800"
+            />
+            <div>
+              <h3 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
+                Ready to scale your business?
+              </h3>
+              <p className="text-slate-300 leading-relaxed">
+                Let&#39;s build the future together.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/get-started"
+            className="px-8 py-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-medium transition-all duration-300 ease-in-out hover:scale-105 shadow-[0_0_30px_rgba(37,99,235,0.45)]"
+          >
+            Start Your Build
+          </Link>
+        </motion.div>
+      </div>
+
+      {/* Layer 2: Main Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-16">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <img
+              src={futureqLogo}
+              alt="FutureQ"
+              className="h-10 w-10 rounded-xl object-contain bg-slate-950/70 border border-slate-800"
+            />
+            <div className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+              FutureQ
+            </div>
+          </div>
+          <p className="text-slate-400 leading-relaxed">
+            Architecting digital dominance for Tier-2 India.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <h4 className="text-sm font-semibold tracking-widest text-slate-400">SERVICES</h4>
+          <div className="flex flex-col gap-3">
+            {[
+              "Web Development",
+              "AI Automation",
+              "Custom CRM",
+              "Lead Generation"
+            ].map((label) => (
+              <a
+                key={label}
+                href="#services"
+                className="text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(59,130,246,0.4)]"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h4 className="text-sm font-semibold tracking-widest text-slate-400">COMPANY</h4>
+          <div className="flex flex-col gap-3">
+            <a href="#about-us" className="text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]">About Us</a>
+            <a href="#our-work" className="text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]">Our Work</a>
+            <a href="#pricing" className="text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]">Pricing</a>
+            <button
+              onClick={openBooking}
+              className="text-left text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]"
+            >
+              Book a Demo
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h4 className="text-sm font-semibold tracking-widest text-slate-400">CONTACT</h4>
+          <button
+            onClick={handleCopyEmail}
+            className="group inline-flex items-center gap-2 text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105"
+          >
+            <span>saurabh.futureq@gmail.com</span>
+            <Copy className="w-4 h-4 text-slate-400 group-hover:text-white" />
+          </button>
+          <div className="flex gap-4 pt-2">
+            {[{
+              label: "LinkedIn",
+              icon: LinkIcon
+            }, {
+              label: "Instagram",
+              icon: Camera
+            }].map(({ label, icon: Icon }) => (
+              <a
+                key={label}
+                href="#"
+                aria-label={label}
+                className="w-11 h-11 rounded-full border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:border-slate-600 transition-all duration-300 ease-in-out hover:scale-105 hover:-translate-y-1 hover:shadow-[0_0_18px_rgba(99,102,241,0.35)]"
+              >
+                <Icon className="w-5 h-5" />
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Layer 3: Watermark and Legal */}
+    <div className="border-t border-slate-900/60">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-[12vw] md:text-[9vw] font-extrabold tracking-tighter text-slate-800/30 text-center leading-none select-none">
+          FUTUREQ
+        </div>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-8 text-sm text-slate-500">
+          <div>Copyright © 2026 FutureQ. All rights reserved.</div>
+          <div className="flex gap-6">
+            <a href="#" className="hover:text-slate-300 transition-all duration-300 ease-in-out hover:scale-105">Privacy Policy</a>
+            <a href="#" className="hover:text-slate-300 transition-all duration-300 ease-in-out hover:scale-105">Terms of Service</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  );
+};
+
+// --- Pages ---
+
+const Home = () => {
+  const { openBooking } = React.useContext(BookingContext);
+  const servicesContainer = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.12 }
+    }
+  };
+
+  const servicesItem = {
+    hidden: { opacity: 0, y: 24 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 110, damping: 18 }
+    }
+  };
+
+  const serviceCards = [
+    {
+      title: "Custom Product Platforms",
+      description: "High-performance platforms engineered for scale, designed to convert local traffic into high-ticket leads.",
+      icon: LayoutDashboard,
+      accent: "from-blue-500/20 via-blue-500/5 to-transparent",
+      bullets: ["Blueprint-to-MVP in 10-14 days", "Secure auth + audit logs", "Role-based dashboards"]
+    },
+    {
+      title: "Automation-First Payments",
+      description: "UPI, Razorpay, and Stripe flows that automate collections, invoices, and reconciliation.",
+      icon: CreditCard,
+      accent: "from-indigo-500/20 via-indigo-500/5 to-transparent",
+      bullets: ["One-click payments", "Auto-invoicing", "Subscription logic"]
+    },
+    {
+      title: "Ops & Admin Intelligence",
+      description: "Actionable dashboards that reveal bottlenecks, automate tasks, and surface growth signals.",
+      icon: Activity,
+      accent: "from-teal-500/20 via-teal-500/5 to-transparent",
+      bullets: ["Real-time analytics", "Team activity tracking", "Smart alerts"]
+    },
+    {
+      title: "System Integrations",
+      description: "We connect CRMs, payment tools, and legacy systems into a single, stable workflow.",
+      icon: Network,
+      accent: "from-violet-500/20 via-violet-500/5 to-transparent",
+      bullets: ["API orchestration", "Webhook automation", "Zero manual data entry"]
+    },
+    {
+      title: "Lead Conversion Engines",
+      description: "Optimized landing funnels with native WhatsApp and mobile-first booking flows.",
+      icon: LayoutDashboard,
+      accent: "from-cyan-500/20 via-cyan-500/5 to-transparent",
+      bullets: ["Local SEO ready", "WhatsApp CTAs", "High-converting forms"]
+    },
+    {
+      title: "AI Workflow Layer",
+      description: "Automate repetitive communication, follow-ups, and lead scoring with AI logic.",
+      icon: Activity,
+      accent: "from-fuchsia-500/20 via-fuchsia-500/5 to-transparent",
+      bullets: ["Auto responses", "Lead qualification", "Smart routing"]
+    }
+  ];
+
+  const processSteps = [
+    {
+      phase: "Phase 01",
+      title: "Discovery & Blueprint",
+      duration: "Week 1",
+      outcomes: ["Process audit", "Conversion audit", "Architecture plan"],
+      signal: "Blueprint locked"
+    },
+    {
+      phase: "Phase 02",
+      title: "Design & Rapid Build",
+      duration: "Week 2-3",
+      outcomes: ["High-fidelity UI", "Core workflows", "QA pass"],
+      signal: "MVP live"
+    },
+    {
+      phase: "Phase 03",
+      title: "Automation & Integrations",
+      duration: "Week 4",
+      outcomes: ["Payments + CRM", "WhatsApp automation", "Analytics hooks"],
+      signal: "Ops automated"
+    },
+    {
+      phase: "Phase 04",
+      title: "Scale & Optimization",
+      duration: "Ongoing",
+      outcomes: ["Performance tuning", "Conversion uplift", "Feature expansion"],
+      signal: "Growth compounding"
+    }
+  ];
+  const heroStats = [
+    { label: "Avg. speed score", value: "90+" },
+    { label: "Time-to-launch", value: "2 days" },
+    { label: "Lead lift", value: "4x" }
+  ];
+
+  const trustSignals = [
+    "Local SEO dominance",
+    "WhatsApp-native flows",
+    "Automation-ready stack",
+    "Conversion-first UX"
+  ];
+
+  const impactCases = [
+    {
+      title: "EdTech Ecosystem Automation",
+      metric: "15+ Hours Saved/Week",
+      summary: "Integrated automated payments, attendance, and admin dashboards for a regional tuition center.",
+      outcomes: ["98% fee collection rate", "3x faster onboarding", "Unified student CRM"],
+      accent: "from-blue-500/20 via-blue-500/5 to-transparent",
+      icon: Activity
+    },
+    {
+      title: "B2B Logistics API Gateway",
+      metric: "300% Processing Speed",
+      summary: "Consolidated fleet tracking, dispatch, and billing into one GraphQL gateway.",
+      outcomes: ["Instant driver routing", "99.9% uptime", "Realtime analytics"],
+      accent: "from-indigo-500/20 via-indigo-500/5 to-transparent",
+      icon: Network
+    },
+    {
+      title: "Gym Lead Engine",
+      metric: "4x Lead Conversion",
+      summary: "Rebuilt the entire funnel with WhatsApp bookings, instant follow-ups, and local SEO.",
+      outcomes: ["42% drop in CPL", "7-day nurture", "Auto follow-ups"],
+      accent: "from-cyan-500/20 via-cyan-500/5 to-transparent",
+      icon: LayoutDashboard
+    }
+  ];
+
+  return (
+    <div className="bg-slate-950 text-white min-h-screen pt-20 overflow-hidden relative">
+      {/* Background Glow */}
+      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 right-1/4 w-[400px] h-[400px] bg-indigo-900/20 rounded-full blur-[100px] pointer-events-none" />
+
+      {/* Hero */}
+      <section className="relative min-h-[90vh] flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),_transparent_55%)] pointer-events-none" />
+        <div className="max-w-6xl mx-auto text-center z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <motion.span
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-300 text-xs font-semibold tracking-widest uppercase mb-6"
+            >
+              Elite AI + Web Automation
+            </motion.span>
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
+              We build <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">conversion systems</span>
+              <br className="hidden md:block" />
+              for India&#39;s next market leaders.
+            </h1>
+            <p className="text-base sm:text-lg md:text-xl text-slate-400 mb-10 max-w-3xl mx-auto leading-relaxed">
+              FutureQ engineers premium, automation-first platforms that replace chaos with precision, speed, and compounding revenue.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                to="/get-started"
+                className="group relative w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-full text-white font-semibold text-lg transition-all duration-300 ease-in-out flex items-center justify-center gap-2 overflow-hidden shadow-[0_0_40px_rgba(37,99,235,0.4)] hover:scale-105"
+              >
+                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
+                <span className="relative z-10">Get a Custom Audit</span>
+                <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <button
+                onClick={openBooking}
+                className="group relative w-full sm:w-auto px-8 py-4 bg-slate-800 hover:bg-slate-700 rounded-full text-white font-semibold text-lg transition-all duration-300 ease-in-out flex items-center justify-center gap-2 overflow-hidden border border-slate-700 hover:border-slate-600 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:scale-105"
+              >
+                <Calendar className="w-5 h-5 text-slate-300 group-hover:text-white transition-colors relative z-10" />
+                <span className="relative z-10">Book a 30-Min Meeting</span>
+              </button>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6"
+          >
+            {heroStats.map((stat) => (
+              <div key={stat.label} className="rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-md px-6 py-5 transition-all duration-300 ease-in-out hover:scale-105">
+                <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">{stat.value}</div>
+                <div className="text-sm text-slate-400 leading-relaxed">{stat.label}</div>
+              </div>
+            ))}
+          </motion.div>
+
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+            {trustSignals.map((signal) => (
+              <span key={signal} className="text-xs font-semibold tracking-widest text-slate-200 uppercase bg-slate-900/60 border border-slate-800 px-4 py-2 rounded-full transition-all duration-300 ease-in-out hover:scale-105">
+                {signal}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Services - Advanced Bento */}
+      <section id="services" className="py-32 relative z-10">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.12),_transparent_55%)] pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-blue-300 uppercase px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10">
+              What We Solve
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mt-4">
+              Systems that replace chaos with
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400"> precision.</span>
+            </h2>
+            <p className="text-slate-400 leading-relaxed max-w-3xl mx-auto mt-4">
+              We design automation ecosystems that feel premium, respond instantly, and turn local demand into compounding revenue.
+            </p>
+          </div>
+
+          <motion.div
+            variants={servicesContainer}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {serviceCards.map((card) => (
+              <motion.div
+                key={card.title}
+                variants={servicesItem}
+                whileHover={{ y: -8, scale: 1.02 }}
+                className="group relative rounded-3xl border border-slate-800 bg-slate-900/50 backdrop-blur-md p-8 overflow-hidden transition-all duration-300 ease-in-out"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${card.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                <div className="relative z-10">
+                  <div className="w-14 h-14 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-center justify-center mb-6 text-blue-300">
+                    <card.icon className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-2xl font-semibold tracking-tight text-white mb-3">
+                    {card.title}
+                  </h3>
+                  <p className="text-slate-400 leading-relaxed mb-6">
+                    {card.description}
+                  </p>
+                  <div className="space-y-3">
+                    {card.bullets.map((bullet) => (
+                      <div key={bullet} className="flex items-start gap-3 text-sm text-slate-300">
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 text-blue-400" />
+                        <span className="leading-relaxed">{bullet}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Process Timeline */}
+      <section className="py-32 relative z-10">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(99,102,241,0.12),_transparent_60%)] pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-indigo-300 uppercase px-4 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10">
+              Our Process
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mt-4">
+              A cinematic build system that
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-400"> compounds results.</span>
+            </h2>
+            <p className="text-slate-400 leading-relaxed max-w-3xl mx-auto mt-4">
+              Each phase is designed for speed, clarity, and compounding conversion wins across your entire digital presence.
+            </p>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            className="relative"
+          >
+            <motion.div
+              initial={{ height: 0 }}
+              whileInView={{ height: "100%" }}
+              viewport={{ once: true, margin: "-120px" }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
+              className="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-6 w-0.5 bg-gradient-to-b from-blue-600 via-indigo-500 to-transparent"
+            />
+            <div className="space-y-10">
+              {processSteps.map((step, idx) => (
+                <motion.div
+                  key={step.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  className={`relative flex flex-col md:flex-row ${idx % 2 === 0 ? "md:justify-start" : "md:justify-end"}`}
+                >
+                  <div className="absolute left-0 md:left-1/2 md:-translate-x-1/2 top-6 w-8 h-8 rounded-full border border-slate-800 bg-slate-950 flex items-center justify-center">
+                    <div className="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)]" />
+                  </div>
+                  <div className="ml-12 md:ml-0 md:w-[48%] rounded-3xl border border-slate-800 bg-slate-900/60 backdrop-blur-md p-8 shadow-[0_0_30px_rgba(15,23,42,0.6)]">
+                    <div className="flex items-center justify-between gap-4 mb-4">
+                      <div>
+                        <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase">{step.phase}</p>
+                        <h3 className="text-2xl font-semibold tracking-tight text-white">{step.title}</h3>
+                      </div>
+                      <span className="text-xs font-semibold text-blue-200 bg-blue-500/10 border border-blue-500/30 px-3 py-1 rounded-full">
+                        {step.duration}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {step.outcomes.map((outcome) => (
+                        <div key={outcome} className="text-sm text-slate-300 leading-relaxed bg-slate-950/60 border border-slate-800 rounded-2xl px-3 py-2">
+                          {outcome}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-6 text-sm text-slate-400 leading-relaxed">
+                      Outcome: <span className="text-slate-200">{step.signal}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Case Studies / Our Impact */}
+      <section id="our-work" className="py-32 relative z-10 bg-slate-900/40">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.12),_transparent_60%)] pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-blue-300 uppercase px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10">
+              Our Impact
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mt-4">
+              Real-world outcomes with
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400"> measurable wins.</span>
+            </h2>
+            <p className="text-slate-400 leading-relaxed max-w-3xl mx-auto mt-4">
+              Each solution is engineered to create visible business impact: faster operations, higher conversion, and scalable demand.
+            </p>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {impactCases.map((item) => (
+              <motion.div
+                key={item.title}
+                whileHover={{ y: -8, scale: 1.01 }}
+                className="relative rounded-3xl border border-slate-800 bg-slate-950/70 backdrop-blur-md p-8 overflow-hidden transition-all duration-300 ease-in-out"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.accent} opacity-70`} />
+                <div className="relative z-10 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs font-semibold tracking-widest text-blue-300 uppercase">{item.metric}</div>
+                    <div className="w-10 h-10 rounded-2xl bg-slate-950/70 border border-slate-800 flex items-center justify-center text-blue-300">
+                      <item.icon className="w-5 h-5" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-semibold tracking-tight text-white mb-3">{item.title}</h3>
+                    <p className="text-slate-300 leading-relaxed">{item.summary}</p>
+                  </div>
+                  <div className="space-y-3">
+                    {item.outcomes.map((outcome) => (
+                      <div key={outcome} className="flex items-start gap-3 text-sm text-slate-200">
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 text-blue-400" />
+                        <span className="leading-relaxed">{outcome}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* About Us / Founders */}
+      <section id="about-us" className="py-32 relative z-10">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.1),_transparent_55%)] pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center mb-20">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-blue-300 uppercase px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10">
+              Leadership
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mt-4">
+              Meet the Engineering Team that
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400"> ships revenue.</span>
+            </h2>
+            <p className="text-slate-400 leading-relaxed max-w-3xl mx-auto mt-4">
+              We blend startup speed with enterprise-grade architecture, delivering systems that feel premium and perform under real-world pressure.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-10">
+            {[{
+              name: "Saurabh Raj",
+              role: "Founder & CEO",
+              accent: "from-blue-500/30 via-blue-500/10 to-transparent",
+              summary: "Product strategist and systems architect focused on conversion, clarity, and market-winning execution.",
+              highlights: ["UX-first product design", "Local market expansion", "Revenue-centric roadmaps"],
+              metrics: ["12+ platform launches", "90+ speed score", "4x lead uplift"]
+            }, {
+              name: "Rishav Kumar Srivastava",
+              role: "Co-Founder & CTO",
+              accent: "from-indigo-500/30 via-indigo-500/10 to-transparent",
+              summary: "Infrastructure and automation specialist ensuring every platform is secure, scalable, and future-proof.",
+              highlights: ["API orchestration", "Security hardening", "Automation workflows"],
+              metrics: ["99.9% uptime targets", "24h deployment cycles", "Zero-downtime rollouts"]
+            }].map((leader) => (
+              <motion.div
+                key={leader.name}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.6 }}
+                whileHover={{ y: -6 }}
+                className="relative rounded-3xl border border-slate-800 bg-slate-900/60 backdrop-blur-md p-10 overflow-hidden transition-all duration-300 ease-in-out"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${leader.accent} opacity-60`} />
+                <div className="relative z-10 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-2xl font-semibold tracking-tight text-white">{leader.name}</h3>
+                      <p className="text-blue-300 font-medium">{leader.role}</p>
+                    </div>
+                    <div className="w-12 h-12 rounded-2xl bg-slate-950/70 border border-slate-800 flex items-center justify-center">
+                      <img src={futureqLogo} alt="FutureQ" className="w-7 h-7 object-contain" />
+                    </div>
+                  </div>
+                  <p className="text-slate-300 leading-relaxed">{leader.summary}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {leader.highlights.map((item) => (
+                      <div key={item} className="text-sm text-slate-300 bg-slate-950/60 border border-slate-800 rounded-2xl px-3 py-2">
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {leader.metrics.map((metric) => (
+                      <span key={metric} className="text-xs font-semibold tracking-widest text-slate-200 uppercase bg-blue-500/10 border border-blue-500/30 px-3 py-1 rounded-full">
+                        {metric}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section id="pricing" className="py-24 relative z-10 bg-neutral-950">
+        <div className="absolute top-1/3 left-1/4 w-[420px] h-[420px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-1/4 right-1/4 w-[420px] h-[420px] bg-fuchsia-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+              Pricing Built for Local Winners
+            </h2>
+            <p className="text-slate-300 leading-relaxed max-w-2xl mx-auto">
+              FutureQ delivers speed, trust, and premium quality for Indian businesses that want to grow fast.
+            </p>
+          </div>
+          {(() => {
+            const tiers = [
+              {
+                name: "STARTER",
+                tagline: "The Digital Storefront",
+                price: "4,999",
+                subtitle: "Perfect for a professional online presence.",
+                features: [
+                  "3-4 Page Architecture",
+                  "Mobile-Responsive UI",
+                  "Fast Loading Speeds",
+                  "Click-to-Call & Basic Contact",
+                  "Standard SEO"
+                ],
+                buttonText: "Start Building",
+                buttonClass:
+                  "border border-slate-600/60 text-slate-100 hover:border-slate-300 hover:text-white",
+                cardClass: "bg-slate-900/50 border border-slate-700/70",
+                accent: "text-slate-300",
+                isPopular: false,
+                hasGradientBorder: false
+              },
+              {
+                name: "BUSINESS",
+                tagline: "The Lead Machine",
+                price: "7,999",
+                subtitle: "Turn visitors into paying customers.",
+                features: [
+                  "Everything in Starter",
+                  "Floating WhatsApp Integration",
+                  "Custom Lead Capture Forms",
+                  "Google My Business Setup",
+                  "Advanced Local SEO"
+                ],
+                buttonText: "Scale My Business",
+                buttonClass:
+                  "bg-cyan-500 text-slate-950 hover:bg-cyan-400 shadow-lg shadow-cyan-500/30",
+                cardClass: "bg-slate-900/70 border border-cyan-400/40 ring-1 ring-cyan-400/20",
+                accent: "text-cyan-200",
+                isPopular: true,
+                hasGradientBorder: false
+              },
+              {
+                name: "ENTERPRISE",
+                tagline: "The Growth Engine",
+                price: "14,999",
+                subtitle: "Fully automated ecosystem for high-ticket local brands.",
+                features: [
+                  "Everything in Business",
+                  "Automated Booking System",
+                  "WhatsApp CRM Automation",
+                  "Premium Bento Grid UI/UX",
+                  "Ultra-Fast Edge Hosting (90+ Speed Score)"
+                ],
+                buttonText: "Automate Everything",
+                buttonClass:
+                  "bg-gradient-to-r from-fuchsia-500 to-indigo-500 text-white hover:from-fuchsia-400 hover:to-indigo-400 shadow-xl shadow-fuchsia-500/30",
+                cardClass: "bg-slate-900/60 border border-slate-700/60",
+                accent: "text-fuchsia-200",
+                isPopular: false,
+                hasGradientBorder: true
+              }
+            ];
+
+            const containerVariants = {
+              hidden: { opacity: 1 },
+              show: {
+                opacity: 1,
+                transition: { staggerChildren: 0.18 }
+              }
+            };
+
+            const cardVariants = {
+              hidden: { opacity: 0, y: 26 },
+              show: {
+                opacity: 1,
+                y: 0,
+                transition: { type: "spring", stiffness: 120, damping: 18 }
+              }
+            };
+
+            return (
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, margin: "-80px" }}
+                className="grid grid-cols-1 gap-8 md:grid-cols-3"
+              >
+                {tiers.map((tier) => (
+                  <motion.div
+                    key={tier.name}
+                    variants={cardVariants}
+                    whileHover={{ y: -8 }}
+                    className={`relative h-full rounded-3xl p-8 backdrop-blur ${tier.cardClass}`}
+                  >
+                    {tier.hasGradientBorder && (
+                      <>
+                        <div className="absolute -inset-[2px] rounded-3xl bg-gradient-to-r from-fuchsia-500 via-indigo-500 to-fuchsia-500 opacity-70 blur-sm" />
+                        <div className="absolute -inset-[1px] rounded-3xl bg-gradient-to-r from-fuchsia-500 via-indigo-500 to-fuchsia-500 opacity-80" />
+                      </>
+                    )}
+
+                    {tier.isPopular && (
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-cyan-500 px-4 py-1 text-xs font-semibold tracking-wider text-slate-950">
+                        MOST POPULAR
+                      </div>
+                    )}
+
+                    <div className="relative z-10 flex h-full flex-col">
+                      <p className="text-xs font-semibold tracking-widest text-slate-400">{tier.name}</p>
+                      <p className={`mt-1 text-sm ${tier.accent}`}>{tier.tagline}</p>
+
+                      <div className="mt-5 flex items-baseline gap-1">
+                        <span className="text-2xl font-medium text-slate-400">₹</span>
+                        <span className="text-5xl font-semibold tracking-tight text-white">{tier.price}</span>
+                      </div>
+
+                      <p className="mt-3 text-sm leading-relaxed text-slate-300">{tier.subtitle}</p>
+
+                      <ul className="mt-6 space-y-3">
+                        {tier.features.map((feature) => (
+                          <li key={feature} className="flex items-start gap-3 text-sm text-slate-200">
+                            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-cyan-300" />
+                            <span className="leading-relaxed">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <Link
+                        to="/get-started"
+                        className={`mt-10 w-full rounded-xl px-4 py-3 text-sm font-semibold tracking-wide transition-all duration-300 ease-in-out hover:scale-105 mt-auto ${tier.buttonClass}`}
+                      >
+                        {tier.buttonText}
+                      </Link>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            );
+          })()}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+const GetStartedFlow = () => {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    businessName: "",
+    industry: "",
+    challenges: "",
+    integrations: "",
+    budget: "",
+    name: "",
+    phone: "",
+    email: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+
+  const handleNext = () => setStep((s) => Math.min(s + 1, 5));
+  const handleBack = () => setStep((s) => Math.max(s - 1, 1));
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const isStepValid = () => {
+    switch (step) {
+      case 1:
+        return Boolean(formData.businessName.trim() && formData.industry.trim());
+      case 2:
+        return Boolean(formData.challenges.trim());
+      case 3:
+        return true;
+      case 4:
+        return Boolean(formData.budget.trim());
+      case 5:
+        return Boolean(formData.name.trim() && formData.email.trim());
+      default:
+        return false;
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("https://hook.eu1.make.com/9ar8qpzvl4bdf5fjpjnukz9jcx84442s", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ...formData,
+          submittedAt: new Date().toISOString(),
+          source: "FutureQ Custom Audit Form"
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
+
+      navigate("/thank-you");
+    } catch (error) {
+      console.error("Form submission error:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const slideVariants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 50 : -50,
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction) => ({
+      zIndex: 0,
+      x: direction < 0 ? 50 : -50,
+      opacity: 0
+    })
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 flex flex-col justify-center relative py-20 px-4">
+      <div className="max-w-2xl mx-auto w-full relative z-10">
+        
+        {/* Progress */}
+        <div className="mb-12">
+          <Link to="/" className="text-slate-400 hover:text-white text-sm flex items-center gap-1 w-fit mb-8">
+            &larr; Back to Home
+          </Link>
+          <div className="flex gap-2 h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+            <motion.div 
+              className="bg-blue-600 h-full rounded-full" 
+              initial={{ width: "20%" }}
+              animate={{ width: `${(step / 5) * 100}%` }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
+          <div className="mt-4 text-xs font-medium text-slate-500 uppercase tracking-widest">Step {step} of 5</div>
+        </div>
+
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden min-h-[400px]">
+          <AnimatePresence mode="wait" custom={1}>
+            
+            {step === 1 && (
+              <motion.div key="step1" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.3 }}>
+                <h2 className="text-3xl font-bold text-white mb-6">Welcome to FutureQ! <br/><span className="text-xl text-slate-400 font-normal">Tell us a bit about your business.</span></h2>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Business Name</label>
+                    <input type="text" name="businessName" value={formData.businessName} onChange={handleChange} className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" placeholder="Acme Corp" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Industry</label>
+                    <input type="text" name="industry" value={formData.industry} onChange={handleChange} className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" placeholder="e.g., Real Estate, EdTech, Logistics" />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {step === 2 && (
+              <motion.div key="step2" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.3 }}>
+                <h2 className="text-3xl font-bold text-white mb-6">What are the primary challenges you're trying to solve?</h2>
+                <textarea name="challenges" value={formData.challenges} onChange={handleChange} rows={5} className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none" placeholder="e.g., Manual workflows, slow payments, messy data, generic website..." />
+              </motion.div>
+            )}
+
+            {step === 3 && (
+              <motion.div key="step3" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.3 }}>
+                <h2 className="text-3xl font-bold text-white mb-6">Any existing systems to integrate with?</h2>
+                <p className="text-slate-400 mb-6 text-sm">Do you currently use Salesforce, Razorpay, a legacy CRM, or proprietary software we need to connect to?</p>
+                <textarea name="integrations" value={formData.integrations} onChange={handleChange} rows={4} className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all resize-none" placeholder="Leave blank if none." />
+              </motion.div>
+            )}
+
+            {step === 4 && (
+              <motion.div key="step4" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.3 }}>
+                <h2 className="text-3xl font-bold text-white mb-6">Perfect. What is your estimated project budget?</h2>
+                <select name="budget" value={formData.budget} onChange={handleChange} className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all appearance-none">
+                  <option value="" disabled>Select Range</option>
+                  <option value="₹5,000 - ₹10,000">₹5,000 - ₹10,000</option>
+                  <option value="₹10,000 - ₹15,000">₹10,000 - ₹15,000</option>
+                  <option value="₹15,000+">₹15,000+</option>
+                  <option value="Custom">Custom / Not Sure</option>
+                </select>
+              </motion.div>
+            )}
+
+            {step === 5 && (
+              <motion.div key="step5" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.3 }}>
+                <h2 className="text-3xl font-bold text-white mb-6">And finally, how can we reach you?</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Full Name</label>
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" required/>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Email</label>
+                    <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" required/>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Phone Number (Optional)</label>
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="absolute bottom-8 left-8 right-8 flex justify-between">
+            {step > 1 ? (
+              <button onClick={handleBack} className="px-6 py-2.5 rounded-full text-slate-400 hover:text-white transition font-medium">
+                Back
+              </button>
+            ) : <div/>}
+
+            {step < 5 ? (
+              <button
+                onClick={handleNext}
+                disabled={!isStepValid()}
+                className="px-8 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white transition font-medium shadow-lg shadow-blue-600/20 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next <ChevronRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                onClick={handleSubmit}
+                disabled={!isStepValid() || isSubmitting}
+                className="px-8 py-2.5 rounded-full bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white transition font-medium shadow-lg shadow-green-600/20 flex items-center gap-2"
+              >
+                {isSubmitting ? "Submitting..." : "Submit Inquiry"}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ThankYou = () => {
+  return (
+    <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-900/10 rounded-full blur-[100px] pointer-events-none" />
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="max-w-xl mx-auto text-center relative z-10"
+      >
+        <div className="w-20 h-20 bg-green-500/10 border border-green-500/30 rounded-full flex items-center justify-center mx-auto mb-8 text-green-400">
+           <CheckCircle2 size={40} />
+        </div>
+        <h1 className="text-4xl md:text-5xl font-bold mb-6">Thank You for Choosing FutureQ.</h1>
+        <p className="text-xl text-slate-400 mb-10 leading-relaxed">
+          We have received your project details and are reviewing them now. A member of our engineering team will reach out to you within the next 1-2 business days to discuss the next steps.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link to="/" className="px-8 py-3 rounded-full bg-slate-800 hover:bg-slate-700 text-white transition font-medium w-full sm:w-auto">
+            Go Back to Home
+          </Link>
+          <a href="#services" className="px-8 py-3 rounded-full border border-blue-600/30 text-blue-400 hover:bg-blue-600/10 transition font-medium w-full sm:w-auto">
+            Explore Our Latest Research
+          </a>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// --- App Root ---
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
+const Layout = ({ children }) => {
+  const location = useLocation();
+  const isFormOrThanks = location.pathname === "/get-started" || location.pathname === "/thank-you";
+  
+  return (
+    <>
+      <ScrollToTop />
+      {!isFormOrThanks && <Navbar />}
+      <main className="min-h-screen">{children}</main>
+      {!isFormOrThanks && <Footer />}
+    </>
+  );
+};
+
+export default function App() {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+
+  const openBooking = () => setIsBookingOpen(true);
+  const closeBooking = () => setIsBookingOpen(false);
+
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
+    if (isBookingOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isBookingOpen]);
+
+  return (
+    <Router>
+      <BookingContext.Provider value={{ openBooking }}>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/get-started" element={<GetStartedFlow />} />
+            <Route path="/thank-you" element={<ThankYou />} />
+          </Routes>
+        </Layout>
+        <BookingModal isOpen={isBookingOpen} onClose={closeBooking} />
+      </BookingContext.Provider>
+    </Router>
+  );
+}
