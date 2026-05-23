@@ -1,191 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, LayoutDashboard, CreditCard, Activity, Network, ArrowRight, CheckCircle2, Calendar, X, Link as LinkIcon, Camera, Copy } from "lucide-react";
+import { ChevronRight, LayoutDashboard, CreditCard, Activity, Network, ArrowRight, CheckCircle2, Calendar, Link as LinkIcon, Camera, Copy } from "lucide-react";
 import futureqLogo from "./assets/futureq.png";
+import SEO from "./components/SEO";
 
-const BookingContext = React.createContext({
-  openBooking: () => {}
-});
-
-const seoFaqs = [
-  {
-    question: "How long does SEO take to show results?",
-    answer: "Most sites see early movement in 4 to 8 weeks, with meaningful compounding gains by months 3 to 6. We pair SEO with conversion fixes so early traffic converts faster."
-  },
-  {
-    question: "Do you handle local SEO for Indian businesses?",
-    answer: "Yes. We optimize Google Business Profiles, location pages, and local intent keywords that capture high-intent searches in Tier-2 and Tier-3 cities."
-  },
-  {
-    question: "Will you improve site speed and Core Web Vitals?",
-    answer: "Absolutely. We optimize performance, image delivery, and code splitting to reach 90+ speed scores and improve Core Web Vitals."
-  },
-  {
-    question: "Do you provide content and landing pages?",
-    answer: "Yes. We create SEO-focused service pages, location pages, and high-converting landing pages aligned with your offers."
-  }
-];
-
-const upsertMeta = ({ name, property, content }) => {
-  const attrName = name ? "name" : "property";
-  const attrValue = name || property;
-  if (!attrValue) {
-    return;
-  }
-  let element = document.querySelector(`meta[${attrName}="${attrValue}"]`);
-  if (!element) {
-    element = document.createElement("meta");
-    element.setAttribute(attrName, attrValue);
-    document.head.appendChild(element);
-  }
-  element.setAttribute("content", content);
-};
-
-const upsertLink = ({ rel, href }) => {
-  let element = document.querySelector(`link[rel="${rel}"]`);
-  if (!element) {
-    element = document.createElement("link");
-    element.setAttribute("rel", rel);
-    document.head.appendChild(element);
-  }
-  element.setAttribute("href", href);
-};
-
-const upsertJsonLd = (json) => {
-  const scriptId = "seo-jsonld";
-  let script = document.getElementById(scriptId);
-  if (!script) {
-    script = document.createElement("script");
-    script.setAttribute("id", scriptId);
-    script.setAttribute("type", "application/ld+json");
-    document.head.appendChild(script);
-  }
-  script.textContent = JSON.stringify(json);
-};
+const CALENDLY_URL = "https://calendly.com/saurabh-futureq/30min";
 
 // --- Components ---
 
-const BookingModal = ({ isOpen, onClose }) => {
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-sm"
-        >
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            className="bg-[#0b0f14] border border-white/10 rounded-3xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden relative shadow-[0_0_60px_rgba(16,185,129,0.18)]"
-          >
-              <div className="flex justify-between items-center p-4 border-b border-white/10 bg-[#0b0f14]/80 backdrop-blur-md absolute top-0 left-0 right-0 z-10">
-              <span className="text-white font-medium flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-emerald-300" />
-                Schedule a Meeting with FutureQ
-              </span>
-              <button 
-                onClick={onClose}
-                  className="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors focus:outline-none"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="flex-1 w-full h-full pt-[60px] bg-[#0a0d12] relative">
-              <div className="h-full w-full px-6 py-8 sm:px-10">
-                <div className="grid h-full grid-cols-1 gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-                  <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8">
-                    <p className="text-xs font-semibold tracking-widest text-emerald-200 uppercase">
-                      Booking overview
-                    </p>
-                    <h3 className="mt-3 text-2xl font-semibold text-white">
-                      Choose a time that works for you
-                    </h3>
-                    <p className="mt-2 text-sm text-slate-300 leading-relaxed">
-                      This is a lightweight preview of availability. We will confirm the slot over email or WhatsApp within one business day.
-                    </p>
-                    <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                      {[
-                        { day: "Mon", date: "May 19", slots: ["11:00 AM", "1:30 PM", "4:00 PM"] },
-                        { day: "Wed", date: "May 21", slots: ["10:30 AM", "2:00 PM", "5:30 PM"] },
-                        { day: "Thu", date: "May 22", slots: ["12:00 PM", "3:15 PM", "6:00 PM"] },
-                        { day: "Fri", date: "May 23", slots: ["9:30 AM", "12:45 PM", "4:30 PM"] }
-                      ].map((block) => (
-                        <div key={block.date} className="rounded-2xl border border-white/10 bg-[#0a0d12]/70 p-4">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-semibold text-white">{block.day}</span>
-                            <span className="text-xs text-slate-400">{block.date}</span>
-                          </div>
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {block.slots.map((slot) => (
-                              <span key={slot} className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">
-                                {slot}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8 flex flex-col justify-between">
-                    <div>
-                      <p className="text-xs font-semibold tracking-widest text-amber-200 uppercase">
-                        What happens next
-                      </p>
-                      <h3 className="mt-3 text-2xl font-semibold text-white">Strategy call agenda</h3>
-                      <ul className="mt-4 space-y-3 text-sm text-slate-300">
-                        {[
-                          "30-minute audit of your current growth stack",
-                          "Pinpoint your fastest revenue wins",
-                          "Share a build plan with timelines",
-                          "Discuss integrations and automation"
-                        ].map((item) => (
-                          <li key={item} className="flex items-start gap-3">
-                            <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-300" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="mt-6 rounded-2xl border border-white/10 bg-[#0a0d12]/70 p-5">
-                      <div className="text-sm text-slate-400">Preferred contact</div>
-                      <div className="mt-2 text-base font-semibold text-white">saurabh.futureq@gmail.com</div>
-                      <div className="mt-4 flex gap-3">
-                        <button
-                          onClick={onClose}
-                          className="flex-1 rounded-full border border-white/10 px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-white/30 transition"
-                        >
-                          Close preview
-                        </button>
-                        <button
-                          onClick={onClose}
-                          className="flex-1 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-emerald-400 transition"
-                        >
-                          Request this slot
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-};
-
 const Navbar = () => {
-  const { openBooking } = React.useContext(BookingContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <motion.nav 
+    <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-[#0a0d12]/70 border-b border-white/10"
@@ -195,7 +23,9 @@ const Navbar = () => {
           <Link to="/" className="flex items-center gap-3">
             <img
               src={futureqLogo}
-              alt="FutureQ"
+              alt="Future Q logo"
+              width="40"
+              height="40"
               className="h-10 w-10 rounded-xl object-contain bg-[#0a0d12]/60 border border-white/10"
             />
             <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-emerald-200">
@@ -204,18 +34,19 @@ const Navbar = () => {
           </Link>
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/services" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">Services</Link>
-            <Link to="/seo" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">SEO</Link>
             <a href="/#our-work" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">Our Work</a>
             <a href="/#about-us" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">About</a>
             <a href="/#pricing" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105">Pricing</a>
-            <button 
-              onClick={openBooking}
+            <a
+              href={CALENDLY_URL}
+              target="_blank"
+              rel="noreferrer"
               className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 cursor-pointer"
             >
               Book a Meeting
-            </button>
-            <Link 
-              to="/get-started" 
+            </a>
+            <Link
+              to="/get-started"
               className="px-5 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold transition-all duration-300 ease-in-out hover:scale-105 shadow-[0_0_20px_rgba(16,185,129,0.35)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)]"
             >
               Get Started
@@ -238,19 +69,18 @@ const Navbar = () => {
             >
               <div className="mt-4 flex flex-col gap-4 rounded-3xl border border-white/10 bg-[#0f1720]/70 backdrop-blur-md p-6">
                 <Link to="/services" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">Services</Link>
-                <Link to="/seo" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">SEO</Link>
                 <a href="/#our-work" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">Our Work</a>
                 <a href="/#about-us" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">About</a>
                 <a href="/#pricing" className="text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out">Pricing</a>
-                <button
-                  onClick={() => {
-                    openBooking();
-                    setIsMenuOpen(false);
-                  }}
+                <a
+                  href={CALENDLY_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setIsMenuOpen(false)}
                   className="text-left text-sm font-medium text-slate-300 hover:text-white transition-all duration-300 ease-in-out"
                 >
                   Book a Meeting
-                </button>
+                </a>
                 <Link
                   to="/get-started"
                   onClick={() => setIsMenuOpen(false)}
@@ -267,162 +97,167 @@ const Navbar = () => {
   );
 };
 
-const Footer = () => {
-  const { openBooking } = React.useContext(BookingContext);
+  const Footer = () => {
+    const handleCopyEmail = async () => {
+      try {
+        await navigator.clipboard.writeText("saurabh.futureq@gmail.com");
+        alert("Email copied to clipboard.");
+      } catch (error) {
+        console.error("Clipboard copy failed:", error);
+        alert("Copy failed. Please try again.");
+      }
+    };
 
-  const handleCopyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText("saurabh.futureq@gmail.com");
-      alert("Email copied to clipboard.");
-    } catch (error) {
-      console.error("Clipboard copy failed:", error);
-      alert("Copy failed. Please try again.");
-    }
-  };
-  
-  return (
-  <footer className="bg-[#0a0d12] relative z-10">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Layer 1: Pre-Footer CTA */}
-      <div className="-translate-y-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="rounded-3xl border border-white/10 bg-[#0f1720]/70 backdrop-blur-md p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_0_40px_rgba(16,185,129,0.15)]"
-        >
-          <div className="flex items-center gap-4">
-            <img
-              src={futureqLogo}
-              alt="FutureQ"
-              className="h-12 w-12 rounded-2xl object-contain bg-[#0a0d12]/60 border border-white/10"
-            />
-            <div>
-              <h3 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
-                Ready to scale your business?
-              </h3>
-              <p className="text-slate-300 leading-relaxed">
-                Let&#39;s build the future together.
+    return (
+      <footer className="bg-[#0a0d12] relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Layer 1: Pre-Footer CTA */}
+          <div className="-translate-y-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="rounded-3xl border border-white/10 bg-[#0f1720]/70 backdrop-blur-md p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_0_40px_rgba(16,185,129,0.15)]"
+            >
+              <div className="flex items-center gap-4">
+                <img
+                  src={futureqLogo}
+                  alt="Future Q logo"
+                  loading="lazy"
+                  width="48"
+                  height="48"
+                  className="h-12 w-12 rounded-2xl object-contain bg-[#0a0d12]/60 border border-white/10"
+                />
+                <div>
+                  <h3 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
+                    Ready to scale your business?
+                  </h3>
+                  <p className="text-slate-300 leading-relaxed">
+                    Let&#39;s build the future together.
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/get-started"
+                className="px-8 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold transition-all duration-300 ease-in-out hover:scale-105 shadow-[0_0_30px_rgba(16,185,129,0.4)]"
+              >
+                Start Your Build
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Layer 2: Main Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-16">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <img
+                  src={futureqLogo}
+                  alt="Future Q logo"
+                  loading="lazy"
+                  width="40"
+                  height="40"
+                  className="h-10 w-10 rounded-xl object-contain bg-[#0a0d12]/70 border border-white/10"
+                />
+                <div className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-emerald-200">
+                  FutureQ
+                </div>
+              </div>
+              <p className="text-slate-400 leading-relaxed">
+                Elite AI + web automation for India&#39;s growth-focused brands.
               </p>
             </div>
-          </div>
-          <Link
-            to="/get-started"
-            className="px-8 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold transition-all duration-300 ease-in-out hover:scale-105 shadow-[0_0_30px_rgba(16,185,129,0.4)]"
-          >
-            Start Your Build
-          </Link>
-        </motion.div>
-      </div>
 
-      {/* Layer 2: Main Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-16">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <img
-              src={futureqLogo}
-              alt="FutureQ"
-              className="h-10 w-10 rounded-xl object-contain bg-[#0a0d12]/70 border border-white/10"
-            />
-            <div className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-emerald-200">
-              FutureQ
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold tracking-widest text-slate-400">SERVICES</h4>
+              <div className="flex flex-col gap-3">
+                {[
+                  { label: "Web Development", href: "/" },
+                  { label: "AI Automation", href: "/" },
+                  { label: "Custom CRM", href: "/" },
+                  { label: "Lead Generation", href: "/" },
+                  { label: "SEO Strategy", href: "/" }
+                ].map(({ label, href }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    className="text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(59,130,246,0.4)]"
+                  >
+                    {label}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold tracking-widest text-slate-400">COMPANY</h4>
+              <div className="flex flex-col gap-3">
+                <a href="/#about-us" className="text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]">About Us</a>
+                <a href="/#our-work" className="text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]">Our Work</a>
+                <a href="/#pricing" className="text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]">Pricing</a>
+                <a
+                  href={CALENDLY_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-left text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]"
+                >
+                  Book a Demo
+                </a>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold tracking-widest text-slate-400">CONTACT</h4>
+              <button
+                onClick={handleCopyEmail}
+                className="group inline-flex items-center gap-2 text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105"
+              >
+                <span>saurabh.futureq@gmail.com</span>
+                <Copy className="w-4 h-4 text-slate-400 group-hover:text-white" />
+              </button>
+              <div className="flex gap-4 pt-2">
+                {[{
+                  label: "LinkedIn",
+                  icon: LinkIcon
+                }, {
+                  label: "Instagram",
+                  icon: Camera
+                }].map(({ label, icon: Icon }) => (
+                  <a
+                    key={label}
+                    href="#"
+                    aria-label={label}
+                    className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/30 transition-all duration-300 ease-in-out hover:scale-105 hover:-translate-y-1 hover:shadow-[0_0_18px_rgba(16,185,129,0.3)]"
+                  >
+                    <Icon className="w-5 h-5" />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
-          <p className="text-slate-400 leading-relaxed">
-            Architecting digital dominance for Tier-2 India.
-          </p>
         </div>
 
-        <div className="space-y-4">
-          <h4 className="text-sm font-semibold tracking-widest text-slate-400">SERVICES</h4>
-          <div className="flex flex-col gap-3">
-            {[
-              { label: "Web Development", href: "/services#web-development" },
-              { label: "AI Automation", href: "/services#ai-automation" },
-              { label: "Custom CRM", href: "/services#custom-crm" },
-              { label: "Lead Generation", href: "/services#lead-generation" },
-              { label: "SEO Strategy", href: "/seo" }
-            ].map(({ label, href }) => (
-              <a
-                key={label}
-                href={href}
-                className="text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(59,130,246,0.4)]"
-              >
-                {label}
-              </a>
-            ))}
+        {/* Layer 3: Watermark and Legal */}
+        <div className="border-t border-white/5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-[12vw] md:text-[9vw] font-extrabold tracking-tighter text-white/5 text-center leading-none select-none">
+              FUTUREQ
+            </div>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-8 text-sm text-slate-500">
+              <div>Copyright © 2026 FutureQ. All rights reserved.</div>
+              <div className="flex gap-6">
+                <a href="#" className="hover:text-slate-300 transition-all duration-300 ease-in-out hover:scale-105">Privacy Policy</a>
+                <a href="#" className="hover:text-slate-300 transition-all duration-300 ease-in-out hover:scale-105">Terms of Service</a>
+              </div>
+            </div>
           </div>
         </div>
-
-        <div className="space-y-4">
-          <h4 className="text-sm font-semibold tracking-widest text-slate-400">COMPANY</h4>
-          <div className="flex flex-col gap-3">
-            <a href="#about-us" className="text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]">About Us</a>
-            <a href="#our-work" className="text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]">Our Work</a>
-            <a href="#pricing" className="text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]">Pricing</a>
-            <button
-              onClick={openBooking}
-              className="text-left text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.4)]"
-            >
-              Book a Demo
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <h4 className="text-sm font-semibold tracking-widest text-slate-400">CONTACT</h4>
-          <button
-            onClick={handleCopyEmail}
-            className="group inline-flex items-center gap-2 text-slate-300 hover:text-white transition-all duration-300 ease-in-out hover:scale-105"
-          >
-            <span>saurabh.futureq@gmail.com</span>
-            <Copy className="w-4 h-4 text-slate-400 group-hover:text-white" />
-          </button>
-          <div className="flex gap-4 pt-2">
-            {[{
-              label: "LinkedIn",
-              icon: LinkIcon
-            }, {
-              label: "Instagram",
-              icon: Camera
-            }].map(({ label, icon: Icon }) => (
-              <a
-                key={label}
-                href="#"
-                aria-label={label}
-                className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/30 transition-all duration-300 ease-in-out hover:scale-105 hover:-translate-y-1 hover:shadow-[0_0_18px_rgba(16,185,129,0.3)]"
-              >
-                <Icon className="w-5 h-5" />
-              </a>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {/* Layer 3: Watermark and Legal */}
-    <div className="border-t border-white/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-[12vw] md:text-[9vw] font-extrabold tracking-tighter text-white/5 text-center leading-none select-none">
-          FUTUREQ
-        </div>
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-8 text-sm text-slate-500">
-          <div>Copyright © 2026 FutureQ. All rights reserved.</div>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-slate-300 transition-all duration-300 ease-in-out hover:scale-105">Privacy Policy</a>
-            <a href="#" className="hover:text-slate-300 transition-all duration-300 ease-in-out hover:scale-105">Terms of Service</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </footer>
-  );
-};
+      </footer>
+    );
+  };
 
 // --- Pages ---
 
 const Home = () => {
-  const { openBooking } = React.useContext(BookingContext);
   const servicesContainer = {
     hidden: { opacity: 0 },
     show: {
@@ -556,13 +391,19 @@ const Home = () => {
   ];
 
   return (
-    <div className="bg-[#0a0d12] text-white min-h-screen pt-20 overflow-hidden relative">
+    <>
+      <SEO
+        title="Future Q | Elite Web Development & AI Automation Agency"
+        description="Future Q is a premium agency delivering elite web development and AI automation for B2B growth teams."
+        keywords="Future Q, FutureQ, web development agency, AI automation agency, B2B websites, India"
+      />
+      <div className="bg-[#0a0d12] text-white min-h-screen pt-20 overflow-hidden relative">
       {/* Background Glow */}
       <div className="absolute top-1/4 left-1/4 w-[520px] h-[520px] bg-emerald-900/20 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute top-1/2 right-1/4 w-[420px] h-[420px] bg-amber-900/20 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Hero */}
-      <section className="relative min-h-[90vh] flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <header className="relative min-h-[90vh] flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.2),_transparent_55%)] pointer-events-none" />
         <div className="max-w-6xl mx-auto text-center z-10">
           <motion.div
@@ -576,15 +417,14 @@ const Home = () => {
               transition={{ delay: 0.1 }}
               className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full border border-emerald-400/40 bg-emerald-400/10 text-emerald-200 text-xs font-semibold tracking-widest uppercase mb-6"
             >
-              Elite AI + Web Automation
+              Future Q | Elite AI + Web Automation
             </motion.span>
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
-              We build <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-emerald-200">conversion systems</span>
-              <br className="hidden md:block" />
-              for India&#39;s next market leaders.
+              Future Q builds elite web development &amp; AI automation
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-emerald-200"> for B2B growth teams.</span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-slate-400 mb-10 max-w-3xl mx-auto leading-relaxed">
-              FutureQ engineers premium, automation-first platforms that replace chaos with precision, speed, and compounding revenue.
+              FutureQ builds affordable, conversion-first websites and automation systems that turn local demand into repeat revenue.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -595,13 +435,15 @@ const Home = () => {
                 <span className="relative z-10">Get a Custom Audit</span>
                 <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <button
-                onClick={openBooking}
+              <a
+                href={CALENDLY_URL}
+                target="_blank"
+                rel="noreferrer"
                 className="group relative w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 rounded-full text-white font-semibold text-lg transition-all duration-300 ease-in-out flex items-center justify-center gap-2 overflow-hidden border border-white/10 hover:border-white/25 hover:shadow-[0_0_20px_rgba(255,255,255,0.12)] hover:scale-105"
               >
                 <Calendar className="w-5 h-5 text-emerald-200 group-hover:text-white transition-colors relative z-10" />
                 <span className="relative z-10">Book a 30-Min Meeting</span>
-              </button>
+              </a>
             </div>
           </motion.div>
 
@@ -628,7 +470,7 @@ const Home = () => {
             ))}
           </div>
         </div>
-      </section>
+      </header>
 
       {/* Services - Advanced Bento */}
       <section id="services" className="py-32 relative z-10">
@@ -639,11 +481,11 @@ const Home = () => {
               What We Solve
             </span>
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight mt-4">
-              Systems that replace chaos with
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-emerald-200"> precision.</span>
+              Revenue systems that replace chaos with
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-emerald-200"> clarity.</span>
             </h2>
             <p className="text-slate-400 leading-relaxed max-w-3xl mx-auto mt-4">
-              We design automation ecosystems that feel premium, respond instantly, and turn local demand into compounding revenue.
+              We design premium web + AI systems that respond instantly, capture leads, and scale local growth.
             </p>
           </div>
 
@@ -655,7 +497,7 @@ const Home = () => {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
             {serviceCards.map((card) => (
-              <motion.div
+              <motion.article
                 key={card.title}
                 variants={servicesItem}
                 whileHover={{ y: -8, scale: 1.02 }}
@@ -681,7 +523,7 @@ const Home = () => {
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </motion.article>
             ))}
           </motion.div>
         </div>
@@ -771,7 +613,7 @@ const Home = () => {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-emerald-200"> measurable wins.</span>
             </h2>
             <p className="text-slate-400 leading-relaxed max-w-3xl mx-auto mt-4">
-              Each solution is engineered to create visible business impact: faster operations, higher conversion, and scalable demand.
+              Each solution is engineered to create visible business impact: faster operations, higher conversion, and scalable demand. From hospitals to libraries and every local business in between, we build systems that fit your workflow and scale with you.
             </p>
           </div>
 
@@ -782,7 +624,7 @@ const Home = () => {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
             {impactCases.map((item) => (
-              <motion.div
+              <motion.article
                 key={item.title}
                 whileHover={{ y: -8, scale: 1.01 }}
                 className="relative rounded-3xl border border-white/10 bg-[#0a0d12]/70 backdrop-blur-md p-8 overflow-hidden transition-all duration-300 ease-in-out"
@@ -808,7 +650,7 @@ const Home = () => {
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </motion.article>
             ))}
           </motion.div>
         </div>
@@ -864,7 +706,14 @@ const Home = () => {
                       <p className="text-emerald-200 font-medium">{leader.role}</p>
                     </div>
                     <div className="w-12 h-12 rounded-2xl bg-[#0a0d12]/70 border border-white/10 flex items-center justify-center">
-                      <img src={futureqLogo} alt="FutureQ" className="w-7 h-7 object-contain" />
+                      <img
+                        src={futureqLogo}
+                        alt="Future Q logo"
+                        loading="lazy"
+                        width="28"
+                        height="28"
+                        className="w-7 h-7 object-contain"
+                      />
                     </div>
                   </div>
                   <p className="text-slate-300 leading-relaxed">{leader.summary}</p>
@@ -1049,7 +898,8 @@ const Home = () => {
           })()}
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 };
 
@@ -1109,7 +959,13 @@ const ServicesPage = () => {
   ];
 
   return (
-    <div className="bg-[#0a0d12] text-white min-h-screen pt-24">
+    <>
+      <SEO
+        title="Future Q Services | Web Development & AI Automation"
+        description="Explore Future Q services: elite web development, AI automation, CRM systems, and conversion-first growth for B2B teams."
+        keywords="Future Q services, web development, AI automation, CRM, lead generation"
+      />
+      <div className="bg-[#0a0d12] text-white min-h-screen pt-24">
       <section className="relative px-4 sm:px-6 lg:px-8">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.2),_transparent_60%)] pointer-events-none" />
         <div className="max-w-6xl mx-auto text-center relative z-10">
@@ -1127,9 +983,9 @@ const ServicesPage = () => {
             <Link to="/get-started" className="px-8 py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold transition-all duration-300 ease-in-out hover:scale-105 shadow-[0_0_35px_rgba(16,185,129,0.4)]">
               Start a Custom Audit
             </Link>
-            <Link to="/seo" className="px-8 py-4 rounded-full border border-white/10 text-slate-200 hover:text-white hover:border-white/30 transition-all duration-300 ease-in-out hover:scale-105">
-              Explore SEO Systems
-            </Link>
+            <a href="/#pricing" className="px-8 py-4 rounded-full border border-white/10 text-slate-200 hover:text-white hover:border-white/30 transition-all duration-300 ease-in-out hover:scale-105">
+              View Pricing
+            </a>
           </div>
         </div>
       </section>
@@ -1193,7 +1049,8 @@ const ServicesPage = () => {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 };
 
@@ -1319,15 +1176,25 @@ const GetStartedFlow = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const mockPayload = {
+      const payload = {
         ...formData,
         submittedAt: new Date().toISOString(),
         source: "FutureQ Custom Audit Form",
         referenceId: `FQ-${Date.now().toString().slice(-6)}`
       };
 
-      await new Promise((resolve) => setTimeout(resolve, 700));
-      console.info("Mock submission stored locally:", mockPayload);
+      const response = await fetch("https://hook.eu1.make.com/9ar8qpzvl4bdf5fjpjnukz9jcx84442s", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Webhook request failed with status ${response.status}`);
+      }
+
       navigate("/thank-you");
     } catch (error) {
       console.error("Form submission error:", error);
@@ -1355,7 +1222,13 @@ const GetStartedFlow = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0d12] flex flex-col justify-center relative py-20 px-4">
+    <>
+      <SEO
+        title="Get Started | Future Q Custom Audit"
+        description="Share your project details to receive a custom audit and build plan from Future Q."
+        robots="noindex, nofollow"
+      />
+      <div className="min-h-screen bg-[#0a0d12] flex flex-col justify-center relative py-20 px-4">
       <div className="max-w-2xl mx-auto w-full relative z-10">
         
         {/* Progress */}
@@ -1469,13 +1342,20 @@ const GetStartedFlow = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
 const ThankYou = () => {
   return (
-    <div className="min-h-screen bg-[#0a0d12] text-white flex items-center justify-center p-4 relative overflow-hidden">
+    <>
+      <SEO
+        title="Thank You | Future Q"
+        description="We received your details and will follow up shortly."
+        robots="noindex, nofollow"
+      />
+      <div className="min-h-screen bg-[#0a0d12] text-white flex items-center justify-center p-4 relative overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-900/10 rounded-full blur-[100px] pointer-events-none" />
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
@@ -1498,135 +1378,9 @@ const ThankYou = () => {
           </a>
         </div>
       </motion.div>
-    </div>
+      </div>
+    </>
   );
-};
-
-// --- App Root ---
-
-const SeoManager = () => {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    const origin = window.location.origin;
-    const url = `${origin}${pathname}`;
-
-    const seoConfig = {
-      "/": {
-        title: "FutureQ | Conversion-First Websites & Automation",
-        description: "FutureQ builds high-conversion websites, automation systems, and AI workflows for fast-growing Indian businesses.",
-        keywords: "agency website, web development, automation, AI workflows, local SEO, India",
-        robots: "index, follow",
-        ogType: "website",
-        serviceType: "Web development, automation, and SEO"
-      },
-      "/services": {
-        title: "Services | FutureQ Web, SEO, Automation",
-        description: "Explore high-end websites, automation, CRM, and SEO services designed to grow local Indian businesses.",
-        keywords: "website services, SEO agency, CRM, automation, lead generation",
-        robots: "index, follow",
-        ogType: "website",
-        serviceType: "Website design, automation, CRM, and SEO"
-      },
-      "/seo": {
-        title: "SEO Systems | FutureQ Local SEO & Growth",
-        description: "High-end SEO for Indian businesses: technical SEO, local intent targeting, and conversion-first landing pages.",
-        keywords: "SEO services, local SEO India, technical SEO, conversion optimization",
-        robots: "index, follow",
-        ogType: "website",
-        serviceType: "SEO and conversion optimization",
-        includeFaq: true
-      },
-      "/get-started": {
-        title: "Get Started | FutureQ Custom Audit",
-        description: "Share your project details to receive a custom audit and build plan.",
-        robots: "noindex, nofollow",
-        ogType: "website"
-      },
-      "/thank-you": {
-        title: "Thank You | FutureQ",
-        description: "We received your details and will follow up shortly.",
-        robots: "noindex, nofollow",
-        ogType: "website"
-      }
-    };
-
-    const page = seoConfig[pathname] || seoConfig["/"];
-    const ogImage = `${origin}/icons.svg`;
-
-    document.title = page.title;
-    upsertMeta({ name: "description", content: page.description });
-    upsertMeta({ name: "robots", content: page.robots });
-    if (page.keywords) {
-      upsertMeta({ name: "keywords", content: page.keywords });
-    }
-    upsertMeta({ property: "og:title", content: page.title });
-    upsertMeta({ property: "og:description", content: page.description });
-    upsertMeta({ property: "og:type", content: page.ogType });
-    upsertMeta({ property: "og:url", content: url });
-    upsertMeta({ property: "og:image", content: ogImage });
-    upsertMeta({ name: "twitter:title", content: page.title });
-    upsertMeta({ name: "twitter:description", content: page.description });
-    upsertMeta({ name: "twitter:image", content: ogImage });
-    upsertMeta({ name: "twitter:card", content: "summary_large_image" });
-    upsertLink({ rel: "canonical", href: url });
-
-    const orgId = `${origin}/#organization`;
-    const siteId = `${origin}/#website`;
-    const pageId = `${url}#webpage`;
-
-    const graph = [
-      {
-        "@type": "Organization",
-        "@id": orgId,
-        name: "FutureQ",
-        url: origin,
-        logo: ogImage,
-        email: "saurabh.futureq@gmail.com"
-      },
-      {
-        "@type": "WebSite",
-        "@id": siteId,
-        name: "FutureQ",
-        url: origin,
-        publisher: { "@id": orgId }
-      },
-      {
-        "@type": "WebPage",
-        "@id": pageId,
-        name: page.title,
-        url,
-        description: page.description,
-        isPartOf: { "@id": siteId }
-      }
-    ];
-
-    if (page.serviceType) {
-      graph.push({
-        "@type": "Service",
-        serviceType: page.serviceType,
-        provider: { "@id": orgId }
-      });
-    }
-
-    if (page.includeFaq) {
-      graph.push({
-        "@type": "FAQPage",
-        mainEntity: seoFaqs.map((faq) => ({
-          "@type": "Question",
-          name: faq.question,
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: faq.answer
-          }
-        }))
-      });
-    }
-
-    upsertJsonLd({ "@context": "https://schema.org", "@graph": graph });
-  }, [pathname]);
-
-  return null;
 };
 
 const ScrollToTop = () => {
@@ -1644,7 +1398,6 @@ const Layout = ({ children }) => {
   return (
     <>
       <ScrollToTop />
-      <SeoManager />
       {!isFormOrThanks && <Navbar />}
       <main className="min-h-screen">{children}</main>
       {!isFormOrThanks && <Footer />}
@@ -1653,35 +1406,16 @@ const Layout = ({ children }) => {
 };
 
 export default function App() {
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-
-  const openBooking = () => setIsBookingOpen(true);
-  const closeBooking = () => setIsBookingOpen(false);
-
-  // Prevent background scrolling when modal is open
-  useEffect(() => {
-    if (isBookingOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => { document.body.style.overflow = 'unset'; };
-  }, [isBookingOpen]);
-
   return (
     <Router>
-      <BookingContext.Provider value={{ openBooking }}>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/seo" element={<SeoLanding />} />
-            <Route path="/get-started" element={<GetStartedFlow />} />
-            <Route path="/thank-you" element={<ThankYou />} />
-          </Routes>
-        </Layout>
-        <BookingModal isOpen={isBookingOpen} onClose={closeBooking} />
-      </BookingContext.Provider>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/get-started" element={<GetStartedFlow />} />
+          <Route path="/thank-you" element={<ThankYou />} />
+        </Routes>
+      </Layout>
     </Router>
   );
 }
