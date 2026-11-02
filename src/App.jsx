@@ -9,23 +9,11 @@ import SEO from "./components/SEO";
 
 function KhanAcademyFacebookCompany() {
   const [copiedEmail, setCopiedEmail] = useState(false);
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    role: "Student",
-    message: "",
-  });
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText("saurabh.futureq@gmail.com");
     setCopiedEmail(true);
     setTimeout(() => setCopiedEmail(false), 2500);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setFormSubmitted(true);
   };
 
   return (
@@ -149,18 +137,12 @@ function KhanAcademyFacebookCompany() {
                   Operating out of a student hostel room in Bokaro Steel City, Jharkhand.
                 </p>
 
-                <div className="mt-4 pt-3 border-t border-[#e2e8f0] flex justify-center gap-2">
-                  <button
-                    onClick={handleCopyEmail}
-                    className="kf-button text-[12.5px] py-2 px-3 flex-1"
-                  >
-                    Message Founders
-                  </button>
+                <div className="mt-4 pt-3 border-t border-[#e2e8f0]">
                   <a
-                    href="#contact"
-                    className="kf-button-secondary text-[12.5px] py-2 px-3 flex-1 text-center"
+                    href="mailto:saurabh.futureq@gmail.com"
+                    className="kf-button text-[13px] py-2 px-3 w-full text-center flex items-center justify-center gap-1.5"
                   >
-                    Partner / Pilot
+                    ✉ Email: saurabh.futureq@gmail.com
                   </a>
                 </div>
               </div>
@@ -282,7 +264,7 @@ function KhanAcademyFacebookCompany() {
                 </div>
                 <div>
                   <a href="#contact" className="font-semibold text-[#1865f2] hover:underline">
-                    • Registration & Early Access
+                    • Contact via Email
                   </a>
                 </div>
               </div>
@@ -714,111 +696,55 @@ function KhanAcademyFacebookCompany() {
               </div>
             </section>
 
-            {/* ── Box 6: Early Access & Contact Form ───────────────────────── */}
+            {/* ── Box 6: Contact Founders Directly (Email Only) ─────────── */}
             <section id="contact" className="kf-panel">
               <div className="kf-panel-header">
-                <span>Connect with Future Q</span>
-                <span className="text-[12px] font-normal text-[#93c5fd]">Inquiries & Beta Access</span>
+                <span>Contact Future Q Founders</span>
+                <span className="text-[12px] font-normal text-[#93c5fd]">Direct Email</span>
               </div>
 
-              <div className="p-5 bg-white">
-                {formSubmitted ? (
-                  <div className="bg-[#f0fdf4] border border-[#10b981] p-4 rounded-lg text-center text-[#166534]">
-                    <strong className="text-[16px] block mb-1">Thank you for reaching out!</strong>
-                    Your inquiry has been received by Saurabh Raj and the Future Q team. We will
-                    get back to you shortly.
+              <div className="p-6 bg-white space-y-4">
+                <div>
+                  <h3 className="text-[20px] font-bold text-[#0f172a] mb-1">
+                    Direct Founder Contact
+                  </h3>
+                  <p className="text-[15px] text-[#475569] leading-relaxed">
+                    For all inquiries regarding Focus Mode Player, CoachingWala ERP pilots, collaborations, or general questions, reach out to Saurabh Raj and Rishav Kumar Srivastava directly:
+                  </p>
+                </div>
+
+                <div className="p-5 bg-[#f8fafc] border border-[#cbd5e1] rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="text-[12px] font-bold uppercase tracking-wider text-[#64748b]">
+                      Founder & Lead Developer Email
+                    </div>
+                    <a
+                      href="mailto:saurabh.futureq@gmail.com"
+                      className="text-[20px] font-bold text-[#1865f2] hover:underline break-all block mt-0.5"
+                    >
+                      saurabh.futureq@gmail.com
+                    </a>
                   </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <p className="text-[13.5px] text-[#64748b]">
-                      Whether you are an exam student wanting early active learning tools, a coaching
-                      institute director interested in CoachingWala ERP, or an investor tracking our
-                      YC application — reach out below.
-                    </p>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-[13px] font-semibold text-[#0f172a] block mb-1">
-                          I am a:
-                        </label>
-                        <select
-                          value={formData.role}
-                          onChange={(e) =>
-                            setFormData({ ...formData, role: e.target.value })
-                          }
-                          className="kf-input w-full"
-                        >
-                          <option value="Student">Student (JEE / NEET / SSC Aspirant)</option>
-                          <option value="Director">Coaching Center Director</option>
-                          <option value="Mentor">Software Engineer / Medical Mentor</option>
-                          <option value="Investor">Investor / Accelerator</option>
-                        </select>
-                      </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={handleCopyEmail}
+                      className="kf-button text-[14px] py-2.5 px-5 cursor-pointer"
+                    >
+                      {copiedEmail ? "✓ Copied to Clipboard!" : "Copy Email"}
+                    </button>
+                    <a
+                      href="mailto:saurabh.futureq@gmail.com"
+                      className="kf-button-secondary text-[14px] py-2.5 px-5"
+                    >
+                      Send Email ↗
+                    </a>
+                  </div>
+                </div>
 
-                      <div>
-                        <label className="text-[13px] font-semibold text-[#0f172a] block mb-1">
-                          Your Name:
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. Rahul Sharma"
-                          value={formData.name}
-                          onChange={(e) =>
-                            setFormData({ ...formData, name: e.target.value })
-                          }
-                          className="kf-input w-full"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-[13px] font-semibold text-[#0f172a] block mb-1">
-                        Email Address:
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="e.g. rahul@example.com"
-                        value={formData.email}
-                        onChange={(e) =>
-                          setFormData({ ...formData, email: e.target.value })
-                        }
-                        className="kf-input w-full"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[13px] font-semibold text-[#0f172a] block mb-1">
-                        Message / Collaboration Note:
-                      </label>
-                      <textarea
-                        rows={3}
-                        placeholder="How can we help you or collaborate?"
-                        value={formData.message}
-                        onChange={(e) =>
-                          setFormData({ ...formData, message: e.target.value })
-                        }
-                        className="kf-input w-full resize-none"
-                      />
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-3 pt-1">
-                      <button type="submit" className="kf-button py-2.5 px-6 text-[14px]">
-                        Submit Inquiry
-                      </button>
-                      <span className="text-[13px] text-[#64748b]">
-                        or email directly at{" "}
-                        <a
-                          href="mailto:saurabh.futureq@gmail.com"
-                          className="text-[#1865f2] font-semibold hover:underline"
-                        >
-                          saurabh.futureq@gmail.com
-                        </a>
-                      </span>
-                    </div>
-                  </form>
-                )}
+                <div className="text-[13.5px] text-[#64748b]">
+                  📍 Operating from our hostel room in Bokaro Steel City, Jharkhand, India. We read and reply to all emails personally.
+                </div>
               </div>
             </section>
           </div>
