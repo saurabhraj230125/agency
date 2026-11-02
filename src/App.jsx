@@ -11,7 +11,7 @@ function KhanAcademyFacebookCompany() {
   const [copiedEmail, setCopiedEmail] = useState(false);
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText("saurabh.futureq@gmail.com");
+    navigator.clipboard.writeText("saurabhraj230125@gmail.com");
     setCopiedEmail(true);
     setTimeout(() => setCopiedEmail(false), 2500);
   };
@@ -139,10 +139,10 @@ function KhanAcademyFacebookCompany() {
 
                 <div className="mt-4 pt-3 border-t border-[#e2e8f0]">
                   <a
-                    href="mailto:saurabh.futureq@gmail.com"
+                    href="mailto:saurabhraj230125@gmail.com"
                     className="kf-button text-[13px] py-2 px-3 w-full text-center flex items-center justify-center gap-1.5"
                   >
-                    ✉ Email: saurabh.futureq@gmail.com
+                    ✉ Email: saurabhraj230125@gmail.com
                   </a>
                 </div>
               </div>
@@ -222,8 +222,8 @@ function KhanAcademyFacebookCompany() {
                   <tr>
                     <td className="label">Contact:</td>
                     <td className="value text-[12.5px] break-all">
-                      <a href="mailto:saurabh.futureq@gmail.com" className="text-[#1865f2]">
-                        saurabh.futureq@gmail.com
+                      <a href="mailto:saurabhraj230125@gmail.com" className="text-[#1865f2]">
+                        saurabhraj230125@gmail.com
                       </a>
                     </td>
                   </tr>
@@ -719,10 +719,10 @@ function KhanAcademyFacebookCompany() {
                       Founder & Lead Developer Email
                     </div>
                     <a
-                      href="mailto:saurabh.futureq@gmail.com"
+                      href="mailto:saurabhraj230125@gmail.com"
                       className="text-[20px] font-bold text-[#1865f2] hover:underline break-all block mt-0.5"
                     >
-                      saurabh.futureq@gmail.com
+                      saurabhraj230125@gmail.com
                     </a>
                   </div>
 
@@ -734,7 +734,7 @@ function KhanAcademyFacebookCompany() {
                       {copiedEmail ? "✓ Copied to Clipboard!" : "Copy Email"}
                     </button>
                     <a
-                      href="mailto:saurabh.futureq@gmail.com"
+                      href="mailto:saurabhraj230125@gmail.com"
                       className="kf-button-secondary text-[14px] py-2.5 px-5"
                     >
                       Send Email ↗

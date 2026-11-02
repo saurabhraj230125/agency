@@ -42,7 +42,7 @@ export default function SEO({
         name: "Future Q",
         alternateName: "FutureQ",
         url: resolvedCanonical,
-        email: "saurabh.futureq@gmail.com",
+        email: "saurabhraj230125@gmail.com",
         logo: resolvedImage
       },
       {
@@ -51,7 +51,7 @@ export default function SEO({
         name: "Future Q",
         alternateName: "FutureQ",
         url: resolvedCanonical,
-        email: "saurabh.futureq@gmail.com",
+        email: "saurabhraj230125@gmail.com",
         areaServed: "IN",
         serviceType: ["Web Development", "AI Automation"],
         provider: { "@id": `${baseUrl}#organization` }

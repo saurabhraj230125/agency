@@ -49,5 +49,5 @@ npm run build
 
 - **Founders**: Saurabh Raj (Founder & Lead Developer) & Rishav Kumar Srivastava (Co-Founder)
 - **Hometown**: Bokaro Steel City, Jharkhand, India
-- **Email**: [saurabh.futureq@gmail.com](mailto:saurabh.futureq@gmail.com)
+- **Email**: [saurabhraj230125@gmail.com](mailto:saurabhraj230125@gmail.com)
 - **Status**: Bootstrapped & Y Combinator Candidate
