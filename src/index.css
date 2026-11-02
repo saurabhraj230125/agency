@@ -1,18 +1,18 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 @layer base {
   body {
-    background-color: #f7f7f7;
-    color: #333333;
-    font-family: "Lucida Grande", Tahoma, Verdana, Arial, sans-serif;
-    font-size: 12px;
-    line-height: 1.45;
+    background-color: #f0f2f5;
+    color: #1e293b;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14.5px;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
 
   a {
-    color: #3b5998;
+    color: #1865f2;
     text-decoration: none;
   }
 
@@ -21,124 +21,149 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Lucida Grande", Tahoma, Verdana, Arial, sans-serif;
-    color: #3b5998;
-    font-weight: bold;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #0f172a;
+    font-weight: 700;
   }
 }
 
-/* ── 2004 Facebook Style Classes ────────────────────────────────────── */
+/* ── Khan Academy + Facebook Hybrid Style Classes ─────────────────── */
 
-/* Classic Top Navigation Bar */
-.fb-navbar {
-  background-color: #3b5998;
-  border-bottom: 1px solid #284074;
+/* Clean, friendly Top Navbar */
+.kf-navbar {
+  background-color: #1b365d;
+  border-bottom: 2px solid #14284b;
 }
 
-/* Box container with classic border */
-.fb-panel {
+/* Content Panel with clean border and subtle elevation */
+.kf-panel {
   background-color: #ffffff;
-  border: 1px solid #3b5998;
-  margin-bottom: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 16px;
+  overflow: hidden;
 }
 
-.fb-panel-light {
-  background-color: #ffffff;
-  border: 1px solid #b4c3dc;
-  margin-bottom: 12px;
-}
-
-/* Classic Facebook box header (blue bar with white text) */
-.fb-panel-header {
-  background-color: #3b5998;
+/* Panel Header (Khan + Facebook friendly blue header) */
+.kf-panel-header {
+  background-color: #1b365d;
   color: #ffffff;
-  font-weight: bold;
-  font-size: 11px;
-  padding: 4px 8px;
-  text-transform: none;
-  letter-spacing: 0.2px;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 16px;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-/* Light blue sub-header bar */
-.fb-panel-subheader {
-  background-color: #d8dfea;
-  color: #3b5998;
-  font-weight: bold;
-  font-size: 11px;
-  padding: 4px 8px;
-  border-bottom: 1px solid #b4c3dc;
+.kf-panel-header-sub {
+  background-color: #e2e8f0;
+  color: #1e3a8a;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #cbd5e1;
 }
 
-/* Classic button */
-.fb-button {
-  background-color: #3b5998;
+/* Big, readable, friendly Buttons */
+.kf-button {
+  background-color: #1865f2;
   color: #ffffff !important;
-  border: 1px solid #284074;
-  font-size: 11px;
-  font-weight: bold;
-  padding: 3px 10px;
+  border: 1px solid #1450c0;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 5px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  gap: 6px;
+  transition: background-color 0.15s ease;
 }
 
-.fb-button:hover {
-  background-color: #2f477a;
+.kf-button:hover {
+  background-color: #0f4ecc;
   text-decoration: none;
 }
 
-.fb-button-secondary {
-  background-color: #eceff5;
-  color: #3b5998 !important;
-  border: 1px solid #849ac5;
-  font-size: 11px;
-  font-weight: bold;
-  padding: 3px 8px;
+.kf-button-green {
+  background-color: #10b981;
+  color: #ffffff !important;
+  border: 1px solid #059669;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 5px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.15s ease;
 }
 
-.fb-button-secondary:hover {
-  background-color: #d8dfea;
+.kf-button-green:hover {
+  background-color: #059669;
   text-decoration: none;
 }
 
-/* Classic form inputs */
-.fb-input {
-  border: 1px solid #849ac5;
-  background-color: #ffffff;
-  color: #333333;
-  padding: 4px 6px;
-  font-size: 11px;
-  border-radius: 0;
+.kf-button-secondary {
+  background-color: #f1f5f9;
+  color: #1e293b !important;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
-.fb-input:focus {
+.kf-button-secondary:hover {
+  background-color: #e2e8f0;
+  text-decoration: none;
+}
+
+/* Big, readable Form Inputs */
+.kf-input {
+  border: 1px solid #94a3b8;
+  background-color: #ffffff;
+  color: #0f172a;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: border-color 0.15s ease;
+}
+
+.kf-input:focus {
   outline: none;
-  border-color: #3b5998;
+  border-color: #1865f2;
+  box-shadow: 0 0 0 2px rgba(24, 101, 242, 0.15);
 }
 
 /* Data / Info Table */
-.fb-table {
+.kf-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.fb-table td {
-  padding: 4px 6px;
-  font-size: 11px;
+.kf-table td {
+  padding: 8px 12px;
+  font-size: 13.5px;
   vertical-align: top;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-.fb-table td.label {
-  color: #666666;
+.kf-table td.label {
+  color: #64748b;
   width: 32%;
-  font-weight: bold;
+  font-weight: 600;
   text-align: right;
-  padding-right: 8px;
+  padding-right: 12px;
 }
 
-.fb-table td.value {
-  color: #333333;
+.kf-table td.value {
+  color: #0f172a;
 }
